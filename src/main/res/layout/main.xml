@@ -4,16 +4,21 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
 
-    <EditText
-            android:id="@+id/searchText"
-            android:layout_width="fill_parent"
+    <!--<EditText-->
+            <!--android:id="@+id/searchText"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"/>-->
+
+    <!--<Button-->
+            <!--android:id="@+id/searchButton"-->
+            <!--android:text="Search"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"/>-->
+
+    <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-    <Button
-            android:id="@+id/searchButton"
-            android:text="Search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
+            android:text="hey" />
 </LinearLayout>

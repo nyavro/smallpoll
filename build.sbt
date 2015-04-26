@@ -5,13 +5,13 @@ android.Plugin.androidBuild
 platformTarget in Android := "android-10"
 
 // Application Name
-name := """scala-android"""
+name := """small-poll"""
 
 // Application Version
 version := "1.0.0"
 
 // Scala version
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.5"
 
 // Repositories for dependencies
 resolvers ++= Seq(Resolver.mavenLocal,
