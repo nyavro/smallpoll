@@ -22,7 +22,15 @@ class SurveyRepositoryImpl(db:SQLiteDatabase) extends SurveyRepository {
     toList(cursor, convert)
   }
 
-  override def save(survey: Survey): Unit = ???
+  override def save(survey: Survey): Unit = {
+    val values = Values(Map("name"->survey.name)).content
+    survey.id match {
+      case Some(id) =>
+        db.update("survey", values, "_id=?", Array(id.toString))
+      case None =>
+        db.insert("survey", null, values)
+    }
+  }
 
   private def toList[A](cursor:Cursor, convert:Cursor => A): List[A] =
     if(cursor.isAfterLast) Nil
@@ -32,5 +40,5 @@ class SurveyRepositoryImpl(db:SQLiteDatabase) extends SurveyRepository {
       item :: toList(cursor, convert)
     }
 
-  private def convert(cursor:Cursor) = Survey(cursor.getLong(0), cursor.getString(1))
+  private def convert(cursor:Cursor) = Survey(Some(cursor.getLong(0)), cursor.getString(1))
 }
