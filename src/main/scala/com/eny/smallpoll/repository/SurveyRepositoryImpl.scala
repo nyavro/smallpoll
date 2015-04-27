@@ -1,14 +1,13 @@
 package com.eny.smallpoll.repository
 
-import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import com.eny.smallpoll.model.{Question, Survey}
+import com.eny.smallpoll.model.Survey
 
 /**
  * Created by eny on 25.04.15.
  */
-class SurveyRepositoryImpl(db:SQLiteDatabase) extends SurveyRepository {
+class SurveyRepositoryImpl(db:SQLiteDatabase) extends SurveyRepository with CursorConversion {
 
   override def load(id: Long): Survey = {
     val cursor = db.rawQuery(s"SELECT id, name FROM survey WHERE id=?", Array(id.toString))
@@ -31,14 +30,6 @@ class SurveyRepositoryImpl(db:SQLiteDatabase) extends SurveyRepository {
         db.insert("survey", null, values)
     }
   }
-
-  private def toList[A](cursor:Cursor, convert:Cursor => A): List[A] =
-    if(cursor.isAfterLast) Nil
-    else {
-      val item = convert(cursor)
-      cursor.moveToNext
-      item :: toList(cursor, convert)
-    }
 
   private def convert(cursor:Cursor) = Survey(Some(cursor.getLong(0)), cursor.getString(1))
 }
