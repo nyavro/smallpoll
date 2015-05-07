@@ -86,6 +86,7 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
   def saveQuestions(db:SQLiteDatabase, questions:List[Question], survey:Long) =
     questions.foldLeft(0) {
       (index, question) => {
+        Log.d("SmallPoll", "Save question")
         db.insert(
           "survey_question",
           null,

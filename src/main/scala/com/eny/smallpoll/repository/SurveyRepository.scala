@@ -8,5 +8,5 @@ import com.eny.smallpoll.model.Survey
 trait SurveyRepository {
   def load(id:Long):Survey
   def save(survey:Survey)
-  def list():List[String]
+  def list():List[Survey]
 }

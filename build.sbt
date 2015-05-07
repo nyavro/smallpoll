@@ -2,7 +2,7 @@
 android.Plugin.androidBuild
 
 // Specifying the Android target Sdk version
-platformTarget in Android := "android-10"
+platformTarget in Android := "android-22"
 
 // Application Name
 name := """small-poll"""

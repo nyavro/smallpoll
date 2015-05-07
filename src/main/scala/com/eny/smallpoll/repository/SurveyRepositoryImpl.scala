@@ -10,13 +10,13 @@ import com.eny.smallpoll.model.Survey
 class SurveyRepositoryImpl(db:SQLiteDatabase) extends SurveyRepository with CursorConversion {
 
   override def load(id: Long): Survey = {
-    val cursor = db.rawQuery(s"SELECT id, name FROM survey WHERE id=?", Array(id.toString))
+    val cursor = db.rawQuery(s"SELECT _id, name FROM survey WHERE id=?", Array(id.toString))
     cursor.moveToFirst
     convert(cursor)
   }
 
   override def list(): List[Survey] = {
-    val cursor = db.query("survey", Array("id", "name"), null, null, null, null, null)
+    val cursor = db.query("survey", Array("_id", "name"), null, null, null, null, null)
     cursor.moveToFirst
     toList(cursor, convert)
   }

@@ -10,8 +10,8 @@ case class Values(map:Map[String,Any]) {
     val res = new ContentValues
     map.map {
       case (key, value:String) => res.put(key, value)
-      case (key, value:Int) => res.put(key, value)
-      case (key, value:Long) => res.put(key, value)
+      case (key, value:Int) => res.put(key, new Integer(value))
+      case (key, value:Long) => res.put(key, new java.lang.Long(value))
     }
     res
   }
