@@ -38,3 +38,7 @@ useProguard in Android := true
 proguardOptions in Android ++= Seq(
   "-ignorewarnings",
   "-keep class scala.Dynamic")
+
+proguardCache in Android ++= Seq(
+  ProguardCache("org.scaloid") % "org.scaloid"
+)
