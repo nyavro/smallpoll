@@ -16,7 +16,7 @@ class QuestionRepositoryImpl(db:SQLiteDatabase) extends QuestionRepository with 
   }
 
   override def list(surveyId: Long): List[Question] = {
-    val cursor = db.query("question", Array("id", "txt"), null, null, null, null, null)
+    val cursor = db.query("question", Array("_id", "txt"), null, null, null, null, null)
     cursor.moveToFirst
     toList(cursor, convert)
   }
