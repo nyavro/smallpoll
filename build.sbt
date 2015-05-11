@@ -1,5 +1,5 @@
 // Using Android Plugin
-android.Plugin.androidBuild
+                                                              android.Plugin.androidBuild
 
 // Specifying the Android target Sdk version
 platformTarget in Android := "android-22"
@@ -22,6 +22,8 @@ resolvers ++= Seq(Resolver.mavenLocal,
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots"),
   Resolver.defaultLocal)
+
+libraryDependencies += "org.scaloid" %% "scaloid" % "4.0-RC1" withSources() withJavadoc()
 
 // Override the run task with the android:run
 run <<= run in Android

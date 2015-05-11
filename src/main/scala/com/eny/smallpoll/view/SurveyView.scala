@@ -1,12 +1,16 @@
 package com.eny.smallpoll.view
 
-import android.app.Activity
-import android.os.Bundle
-import com.eny.smallpoll.R
+import org.scaloid.common.{SActivity, STextView, SVerticalLayout}
 
-class SurveyView extends Activity {
-  override def onCreate(bundle:Bundle) = {
-    super.onCreate(bundle)
-    setContentView(R.layout.surveyview)
+class SurveyView extends SActivity {
+
+  lazy val name = new STextView("test")
+
+  onCreate {
+    contentView(new SVerticalLayout += name)
   }
+//  override def onCreate(bundle:Bundle) = {
+//    super.onCreate(bundle)
+//    setContentView(R.layout.surveyview)
+//  }
 }
