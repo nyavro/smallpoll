@@ -13,7 +13,7 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
 
   override def onCreate(db:SQLiteDatabase) = {
     db.execSQL("CREATE TABLE answer (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null)")
-    db.execSQL("CREATE TABLE question (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null)")
+    db.execSQL("CREATE TABLE question (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null, multi boolean not null)")
     db.execSQL("CREATE TABLE survey (_id INTEGER PRIMARY KEY, name text not null)")
     db.execSQL("CREATE TABLE question_answer (question_id integer not null, answer_id integer not null)")
     db.execSQL("CREATE TABLE survey_question (survey_id integer not null, question_id integer not null)")
@@ -29,7 +29,8 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
               Answer("Yes"),
               Answer("No"),
               Answer("Won't answer")
-            )
+            ),
+            multi = false
           )
         )
       )
@@ -45,14 +46,16 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
               Answer("From friend"),
               Answer("Internet search"),
               Answer("Other")
-            )
+            ),
+            multi = true
           ),
           Question(
             "Do you like our new logo?",
             List(
               Answer("Yes"),
               Answer("No")
-            )
+            ),
+            multi = false
           )
         )
       )
@@ -60,7 +63,7 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
   }
 
   case class Answer(text:String)
-  case class Question(text:String, answers:List[Answer])
+  case class Question(text:String, answers:List[Answer], multi:Boolean)
   case class Survey(name:String, questions:List[Question])
 
   def saveSurvey(db:SQLiteDatabase, survey:Survey): Unit =
@@ -90,7 +93,7 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
     questions.foldLeft(0) {
       (index, question) => {
         Log.d("SmallPoll", "Save question")
-        val questionId = db.insert("question", null, Values(Map("txt" -> question.text, "indx" -> index)).content)
+        val questionId = db.insert("question", null, Values(Map("txt" -> question.text, "indx" -> index, "multi" -> question.multi)).content)
         db.insert(
           "survey_question",
           null,
