@@ -10,7 +10,6 @@ import com.eny.smallpoll.model.Survey
 class SurveyRepository(db:SQLiteDatabase) extends CursorConversion {
 
   def remove(id: Long):Unit = {
-    db.delete("survey_questions", "survey_id=?", Array(id.toString))
     db.delete("survey", "_id=?", Array(id.toString))
   }
 

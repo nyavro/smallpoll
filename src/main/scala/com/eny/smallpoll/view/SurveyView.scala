@@ -1,11 +1,13 @@
 package com.eny.smallpoll.view
 
-import android.content.Intent
+import android.app.AlertDialog.Builder
+import android.content.DialogInterface.OnClickListener
+import android.content.{DialogInterface, Intent}
 import android.view.View
 import android.widget.{AdapterView, ArrayAdapter}
 import com.eny.smallpoll.R
-import com.eny.smallpoll.model.{Question, Survey}
-import com.eny.smallpoll.repository.{QuestionRepositoryImpl, SurveyRepository}
+import com.eny.smallpoll.model.Question
+import com.eny.smallpoll.repository.QuestionRepository
 import org.scaloid.common._
 
 class SurveyView extends SActivity with Db {
@@ -13,7 +15,7 @@ class SurveyView extends SActivity with Db {
   lazy val name = new STextView("test")
   lazy val questions = new SListView()
   lazy val add = new SButton()
-  lazy val repository = new QuestionRepositoryImpl(instance.getWritableDatabase)
+  lazy val repository = new QuestionRepository(instance.getWritableDatabase)
 
   onCreate {
     name.setText(getIntent.getStringExtra("name"))
@@ -33,7 +35,36 @@ class SurveyView extends SActivity with Db {
         intent.putExtra("text", question.text)
         startActivity(intent)
     }
+    questions.onItemLongClick {
+      (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
+        new Builder(SurveyView.this)
+          .setIconAttribute(android.R.attr.alertDialogIcon)
+          .setTitle(R.string.remove_question)
+          .setPositiveButton(
+            R.string.dialog_ok,
+            new OnClickListener() {
+              override def onClick(dialog: DialogInterface, whichButton: Int) = {
+                val survey = adapterView.getItemAtPosition(position).asInstanceOf[Question]
+                repository.remove(survey.id.getOrElse(-1L))
+                view.invalidate()
+              }
+            }
+          )
+          .setNegativeButton(
+            R.string.dialog_cancel,
+            new OnClickListener {
+              override def onClick(dialog: DialogInterface, whichButton: Int) = {}
+            }
+          )
+        true
+    }
     add.setText(R.string.add)
+    add.onClick {
+      val intent = new Intent(SurveyView.this, classOf[QuestionView])
+      intent.putExtra("id", -1L)
+      intent.putExtra("txt", "")
+      startActivity(intent)
+    }
     contentView(new SVerticalLayout += name += questions += add)
   }
 }

@@ -14,9 +14,9 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
   override def onCreate(db:SQLiteDatabase) = {
     db.setForeignKeyConstraintsEnabled(true)
     db.execSQL("CREATE TABLE survey (_id INTEGER PRIMARY KEY, name text not null)")
-    db.execSQL("CREATE TABLE question (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null, multi boolean not null, FOREIGN KEY(survey_id) REFERENCES survey(_id))")
-    db.execSQL("CREATE TABLE answer (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null, FOREIGN KEY(question_id) REFERENCES question(_id))")
-    db.execSQL("CREATE TABLE result (date integer not null, FOREIGN KEY(answer_id) REFERENCES answer(_id))")
+    db.execSQL("CREATE TABLE question (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null, multi boolean not null, FOREIGN KEY(survey_id) REFERENCES survey(_id) ON DELETE CASCADE)")
+    db.execSQL("CREATE TABLE answer (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null, FOREIGN KEY(question_id) REFERENCES question(_id) ON DELETE CASCADE)")
+    db.execSQL("CREATE TABLE result (date integer not null, FOREIGN KEY(answer_id) REFERENCES answer(_id) ON DELETE CASCADE)")
     saveSurvey(
       db,
       Survey(

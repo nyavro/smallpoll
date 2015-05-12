@@ -55,6 +55,7 @@ class SurveyList extends SActivity with Db {
           )
         true
     }
+    add.setText(R.string.add)
     add.onClick {
       val intent = new Intent(SurveyList.this, classOf[SurveyView])
       intent.putExtra("id", -1L)

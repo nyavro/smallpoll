@@ -1,11 +1,9 @@
 package com.eny.smallpoll.view
 
-import android.content.Intent
-import android.view.View
-import android.widget.{AdapterView, ArrayAdapter}
+import android.widget.ArrayAdapter
 import com.eny.smallpoll.R
-import com.eny.smallpoll.model.{Answer, Question}
-import com.eny.smallpoll.repository.{AnswerRepository, QuestionRepositoryImpl}
+import com.eny.smallpoll.model.Answer
+import com.eny.smallpoll.repository.AnswerRepository
 import org.scaloid.common._
 
 class QuestionView extends SActivity with Db {
