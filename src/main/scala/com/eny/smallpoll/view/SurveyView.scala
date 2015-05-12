@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.{AdapterView, ArrayAdapter}
 import com.eny.smallpoll.R
 import com.eny.smallpoll.model.{Question, Survey}
-import com.eny.smallpoll.repository.{QuestionRepositoryImpl, SurveyRepositoryImpl}
+import com.eny.smallpoll.repository.{QuestionRepositoryImpl, SurveyRepository}
 import org.scaloid.common._
 
 class SurveyView extends SActivity with Db {

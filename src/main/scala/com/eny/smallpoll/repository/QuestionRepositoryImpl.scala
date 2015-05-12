@@ -7,21 +7,15 @@ import com.eny.smallpoll.model.Question
 /**
  * Created by eny on 27.04.15.
  */
-class QuestionRepositoryImpl(db:SQLiteDatabase) extends QuestionRepository with CursorConversion {
+class QuestionRepositoryImpl(db:SQLiteDatabase) extends CursorConversion {
 
-  override def load(id: Long): Question = {
-    val cursor = db.rawQuery(s"SELECT _id, txt FROM question WHERE id=?", Array(id.toString))
-    cursor.moveToFirst
-    convert(cursor)
-  }
-
-  override def list(surveyId: Long): List[Question] = {
-    val cursor = db.rawQuery("SELECT _id, txt, multi FROM question WHERE survey_id=?", Array(surveyId.toString))
+  def list(surveyId: Long): List[Question] = {
+    val cursor = db.rawQuery("SELECT _id, txt, multi, survey_id FROM question WHERE survey_id=?", Array(surveyId.toString))
     cursor.moveToFirst
     toList(cursor, convert)
   }
 
-  override def save(question: Question): Unit = {
+  def save(question: Question): Unit = {
     val values = Values(Map("txt"->question.text, "multi"->question.multi)).content
     question.id match {
       case Some(id) =>
@@ -31,5 +25,5 @@ class QuestionRepositoryImpl(db:SQLiteDatabase) extends QuestionRepository with 
     }
   }
 
-  def convert(cursor:Cursor) = Question(Some(cursor.getLong(0)), cursor.getString(1), cursor.getInt(2)==1)
+  def convert(cursor:Cursor) = Question(Some(cursor.getLong(0)), cursor.getString(1), cursor.getInt(2)==1, cursor.getLong(3))
 }

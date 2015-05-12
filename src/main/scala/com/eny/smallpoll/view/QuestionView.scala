@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.{AdapterView, ArrayAdapter}
 import com.eny.smallpoll.R
 import com.eny.smallpoll.model.{Answer, Question}
-import com.eny.smallpoll.repository.{AnswerRepositoryImpl, QuestionRepositoryImpl}
+import com.eny.smallpoll.repository.{AnswerRepository, QuestionRepositoryImpl}
 import org.scaloid.common._
 
 class QuestionView extends SActivity with Db {
@@ -13,7 +13,7 @@ class QuestionView extends SActivity with Db {
   lazy val text = new STextView("test")
   lazy val answers = new SListView()
   lazy val add = new SButton()
-  lazy val repository = new AnswerRepositoryImpl(instance.getWritableDatabase)
+  lazy val repository = new AnswerRepository(instance.getWritableDatabase)
 
   onCreate {
     text.setText(getIntent.getStringExtra("text"))

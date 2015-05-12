@@ -7,14 +7,14 @@ import android.view.View
 import android.widget.{AdapterView, ArrayAdapter}
 import com.eny.smallpoll.R
 import com.eny.smallpoll.model.Survey
-import com.eny.smallpoll.repository.SurveyRepositoryImpl
+import com.eny.smallpoll.repository.SurveyRepository
 import org.scaloid.common._
 
 class SurveyList extends SActivity with Db {
 
   lazy val list = new SListView()
   lazy val add = new SButton()
-  lazy val repository = new SurveyRepositoryImpl(instance.getWritableDatabase)
+  lazy val repository = new SurveyRepository(instance.getWritableDatabase)
 
   onCreate {
     list.setAdapter(
