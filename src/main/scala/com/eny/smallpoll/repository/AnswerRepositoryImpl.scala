@@ -2,7 +2,7 @@ package com.eny.smallpoll.repository
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import com.eny.smallpoll.model.{Answer, Question}
+import com.eny.smallpoll.model.Answer
 
 /**
  * Created by eny on 27.04.15.
