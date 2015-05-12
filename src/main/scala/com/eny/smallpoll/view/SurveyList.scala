@@ -35,7 +35,7 @@ class SurveyList extends SActivity with Db {
     list.onItemLongClick {
       (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
         new Builder(SurveyList.this)
-          .setIconAttribute(android.R.attr.alertDialogIcon)
+          .setIcon(android.R.attr.alertDialogIcon)
           .setTitle(R.string.remove_survey)
           .setPositiveButton(
             R.string.dialog_ok,
@@ -53,6 +53,8 @@ class SurveyList extends SActivity with Db {
               override def onClick(dialog: DialogInterface, whichButton: Int) = {}
             }
           )
+          .create
+          .show()
         true
     }
     add.setText(R.string.add)

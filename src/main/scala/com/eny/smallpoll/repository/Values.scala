@@ -1,5 +1,7 @@
 package com.eny.smallpoll.repository
 
+import java.lang
+
 import android.content.ContentValues
 
 /**
@@ -11,7 +13,8 @@ case class Values(map:Map[String,Any]) {
     map.map {
       case (key, value:String) => res.put(key, value)
       case (key, value:Int) => res.put(key, new Integer(value))
-      case (key, value:Long) => res.put(key, new java.lang.Long(value))
+      case (key, value:Long) => res.put(key, new lang.Long(value))
+      case (key, value:Boolean) => res.put(key, new lang.Boolean(value))
     }
     res
   }

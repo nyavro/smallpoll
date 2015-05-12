@@ -12,9 +12,9 @@ import org.scaloid.common._
 
 class SurveyView extends SActivity with Db {
 
-  lazy val name = new STextView("test")
-  lazy val questions = new SListView()
-  lazy val add = new SButton()
+  lazy val name = new SEditText
+  lazy val questions = new SListView
+  lazy val add = new SButton
   lazy val repository = new QuestionRepository(instance.getWritableDatabase)
 
   onCreate {
@@ -38,7 +38,7 @@ class SurveyView extends SActivity with Db {
     questions.onItemLongClick {
       (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
         new Builder(SurveyView.this)
-          .setIconAttribute(android.R.attr.alertDialogIcon)
+          .setIcon(android.R.attr.alertDialogIcon)
           .setTitle(R.string.remove_question)
           .setPositiveButton(
             R.string.dialog_ok,
@@ -56,6 +56,8 @@ class SurveyView extends SActivity with Db {
               override def onClick(dialog: DialogInterface, whichButton: Int) = {}
             }
           )
+          .create
+          .show()
         true
     }
     add.setText(R.string.add)

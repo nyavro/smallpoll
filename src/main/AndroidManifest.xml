@@ -11,13 +11,10 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name="com.eny.smallpoll.view.SurveyView"
-				  android:label="SurveyView">
-		</activity>
-		<activity android:name="com.eny.smallpoll.view.QuestionView"
-				  android:label="QuestionView">
-		</activity>
+		<activity android:name="com.eny.smallpoll.view.SurveyView"		android:label="SurveyView"/>
+		<activity android:name="com.eny.smallpoll.view.QuestionView"	android:label="QuestionView"/>
+		<activity android:name="com.eny.smallpoll.view.AnswerView"		android:label="AnswerView"/>
 	</application>
-	<uses-sdk android:minSdkVersion="8" />
+	<uses-sdk android:minSdkVersion="16" />
 
 </manifest> 
