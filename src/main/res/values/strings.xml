@@ -6,4 +6,5 @@
     <string name="dialog_ok">ОК</string>
     <string name="dialog_cancel">Отменить</string>
     <string name="remove_question">Удалить вопрос?</string>
+    <string name="save">Сохранить</string>
 </resources>

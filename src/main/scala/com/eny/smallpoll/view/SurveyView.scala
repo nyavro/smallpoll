@@ -44,8 +44,8 @@ class SurveyView extends SActivity with Db {
             R.string.dialog_ok,
             new OnClickListener() {
               override def onClick(dialog: DialogInterface, whichButton: Int) = {
-                val survey = adapterView.getItemAtPosition(position).asInstanceOf[Question]
-                repository.remove(survey.id.getOrElse(-1L))
+                val question = adapterView.getItemAtPosition(position).asInstanceOf[Question]
+                repository.remove(question.id.getOrElse(-1L))
                 view.invalidate()
               }
             }
