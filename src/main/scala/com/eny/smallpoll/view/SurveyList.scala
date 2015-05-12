@@ -12,17 +12,18 @@ class SurveyList extends SActivity with Db {
   lazy val repository = new SurveyRepositoryImpl(instance.getWritableDatabase)
 
   onCreate {
-    val adapter: ArrayAdapter[Survey] = new ArrayAdapter[Survey](
-    this,
+    list.setAdapter(
+      new ArrayAdapter[Survey](
+        this,
         android.R.layout.simple_list_item_1,
-        repository.list().map(survey => survey).toArray
+        repository.list().toArray
+      )
     )
-    list.setAdapter(adapter)
-    list.onItemClick{
+    list.onItemClick {
       (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
         val intent = new Intent(SurveyList.this, classOf[SurveyView])
         val survey: Survey = adapterView.getItemAtPosition(position).asInstanceOf[Survey]
-        intent.putExtra("id", survey.id)
+        intent.putExtra("id", survey.id.getOrElse(-1L))
         intent.putExtra("name", survey.name)
         startActivity(intent)
     }

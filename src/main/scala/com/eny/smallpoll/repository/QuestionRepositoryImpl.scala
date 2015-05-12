@@ -16,7 +16,7 @@ class QuestionRepositoryImpl(db:SQLiteDatabase) extends QuestionRepository with 
   }
 
   override def list(surveyId: Long): List[Question] = {
-    val cursor = db.query("question", Array("_id", "txt"), null, null, null, null, null)
+    val cursor = db.rawQuery("SELECT q._id, q.txt FROM question q INNER JOIN survey_question sq ON q._id=sq.question_id WHERE sq.survey_id=?", Array(surveyId.toString))
     cursor.moveToFirst
     toList(cursor, convert)
   }

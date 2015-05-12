@@ -66,7 +66,8 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
   def saveSurvey(db:SQLiteDatabase, survey:Survey): Unit =
     saveQuestions(db, survey.questions, db.insert("survey", null, Values(Map("name"->survey.name)).content))
 
-  def saveAnswers(db:SQLiteDatabase, answers:List[Answer], question:Long) =
+  def saveAnswers(db:SQLiteDatabase, answers:List[Answer], question:Long) = {
+    Log.d("smallpoll", "Saving answers")
     answers.foldLeft(0) {
       (index, answer) => {
         db.insert(
@@ -74,32 +75,37 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
           null,
           Values(
             Map(
-              "question_id"->question,
-              "answer_id"->db.insert("answer", null, Values(Map("txt"->answer.text, "indx"->index)).content)
+              "question_id" -> question,
+              "answer_id" -> db.insert("answer", null, Values(Map("txt" -> answer.text, "indx" -> index)).content)
             )
           ).content
         )
         index + 1
       }
     }
+  }
 
-  def saveQuestions(db:SQLiteDatabase, questions:List[Question], survey:Long) =
+  def saveQuestions(db:SQLiteDatabase, questions:List[Question], survey:Long) = {
+    Log.d("smallpoll", "Saving questions")
     questions.foldLeft(0) {
       (index, question) => {
         Log.d("SmallPoll", "Save question")
+        val questionId = db.insert("question", null, Values(Map("txt" -> question.text, "indx" -> index)).content)
         db.insert(
           "survey_question",
           null,
           Values(
             Map(
-              "survey_id"->survey,
-              "question_id"->db.insert("question", null, Values(Map("txt"->question.text, "indx"->index)).content)
+              "survey_id" -> survey,
+              "question_id" -> questionId
             )
           ).content
         )
+        saveAnswers(db, question.answers, questionId)
         index + 1
       }
     }
+  }
 
   override def onUpgrade(db:SQLiteDatabase, oldVersion:Int, newVersion:Int) = {
     Log.w(this.getClass.getName, s"Upgrading database from version $oldVersion to $newVersion")

@@ -14,6 +14,9 @@
 		<activity android:name="com.eny.smallpoll.view.SurveyView"
 				  android:label="SurveyView">
 		</activity>
+		<activity android:name="com.eny.smallpoll.view.QuestionView"
+				  android:label="QuestionView">
+		</activity>
 	</application>
 	<uses-sdk android:minSdkVersion="8" />
 
