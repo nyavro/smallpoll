@@ -12,12 +12,11 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
   def this(context:Context) = this(context, "smallpoll", 1)
 
   override def onCreate(db:SQLiteDatabase) = {
-    db.execSQL("CREATE TABLE answer (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null)")
-    db.execSQL("CREATE TABLE question (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null, multi boolean not null)")
+    db.setForeignKeyConstraintsEnabled(true)
     db.execSQL("CREATE TABLE survey (_id INTEGER PRIMARY KEY, name text not null)")
-    db.execSQL("CREATE TABLE question_answer (question_id integer not null, answer_id integer not null)")
-    db.execSQL("CREATE TABLE survey_question (survey_id integer not null, question_id integer not null)")
-    db.execSQL("CREATE TABLE result (date integer not null, question_id integer not null, answer_id integer not null)")
+    db.execSQL("CREATE TABLE question (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null, multi boolean not null, FOREIGN KEY(survey_id) REFERENCES survey(_id))")
+    db.execSQL("CREATE TABLE answer (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null, FOREIGN KEY(question_id) REFERENCES question(_id))")
+    db.execSQL("CREATE TABLE result (date integer not null, FOREIGN KEY(answer_id) REFERENCES answer(_id))")
     saveSurvey(
       db,
       Survey(
@@ -73,16 +72,7 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
     Log.d("smallpoll", "Saving answers")
     answers.foldLeft(0) {
       (index, answer) => {
-        db.insert(
-          "question_answer",
-          null,
-          Values(
-            Map(
-              "question_id" -> question,
-              "answer_id" -> db.insert("answer", null, Values(Map("txt" -> answer.text, "indx" -> index)).content)
-            )
-          ).content
-        )
+        db.insert("answer", null, Values(Map("txt" -> answer.text, "indx" -> index, "question_id" -> question)).content)
         index + 1
       }
     }
@@ -93,18 +83,7 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
     questions.foldLeft(0) {
       (index, question) => {
         Log.d("SmallPoll", "Save question")
-        val questionId = db.insert("question", null, Values(Map("txt" -> question.text, "indx" -> index, "multi" -> question.multi)).content)
-        db.insert(
-          "survey_question",
-          null,
-          Values(
-            Map(
-              "survey_id" -> survey,
-              "question_id" -> questionId
-            )
-          ).content
-        )
-        saveAnswers(db, question.answers, questionId)
+        saveAnswers(db, question.answers, db.insert("question", null, Values(Map("txt" -> question.text, "indx" -> index, "multi" -> question.multi, "survey_id" -> survey)).content))
         index + 1
       }
     }

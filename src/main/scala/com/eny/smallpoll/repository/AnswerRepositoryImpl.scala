@@ -10,7 +10,7 @@ import com.eny.smallpoll.model.{Answer, Question}
 class AnswerRepositoryImpl(db:SQLiteDatabase) extends AnswerRepository with CursorConversion {
 
   override def list(questionId: Long): List[Answer] = {
-    val cursor = db.rawQuery("SELECT a.* FROM answer a INNER JOIN question_answer qa ON a._id=qa.answer_id WHERE qa.question_id=?", Array(questionId.toString))
+    val cursor = db.rawQuery("SELECT _id, txt, indx FROM answer WHERE question_id=?", Array(questionId.toString))
     cursor.moveToFirst
     toList(cursor, convert)
   }
