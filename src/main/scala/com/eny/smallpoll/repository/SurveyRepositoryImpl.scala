@@ -9,6 +9,11 @@ import com.eny.smallpoll.model.Survey
  */
 class SurveyRepositoryImpl(db:SQLiteDatabase) extends SurveyRepository with CursorConversion {
 
+  def remove(id: Long):Unit = {
+    db.delete("survey_questions", "survey_id=?", Array(id.toString))
+    db.delete("survey", "_id=?", Array(id.toString))
+  }
+
   override def load(id: Long): Survey = {
     val cursor = db.rawQuery(s"SELECT _id, name FROM survey WHERE id=?", Array(id.toString))
     cursor.moveToFirst

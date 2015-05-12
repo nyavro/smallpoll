@@ -1,14 +1,19 @@
 package com.eny.smallpoll.view
-import android.content.Intent
+
+import android.app.AlertDialog.Builder
+import android.content.DialogInterface.OnClickListener
+import android.content.{DialogInterface, Intent}
 import android.view.View
 import android.widget.{AdapterView, ArrayAdapter}
+import com.eny.smallpoll.R
 import com.eny.smallpoll.model.Survey
-import com.eny.smallpoll.repository.{SmallpollDatabase, SurveyRepository, SurveyRepositoryImpl}
-import org.scaloid.common.{SVerticalLayout, SListView, SActivity}
+import com.eny.smallpoll.repository.SurveyRepositoryImpl
+import org.scaloid.common._
 
 class SurveyList extends SActivity with Db {
 
   lazy val list = new SListView()
+  lazy val add = new SButton()
   lazy val repository = new SurveyRepositoryImpl(instance.getWritableDatabase)
 
   onCreate {
@@ -27,6 +32,35 @@ class SurveyList extends SActivity with Db {
         intent.putExtra("name", survey.name)
         startActivity(intent)
     }
-    setContentView(new SVerticalLayout += list)
+    list.onItemLongClick {
+      (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
+        new Builder(SurveyList.this)
+          .setIconAttribute(android.R.attr.alertDialogIcon)
+          .setTitle(R.string.remove_survey)
+          .setPositiveButton(
+            R.string.dialog_ok,
+            new OnClickListener() {
+              override def onClick(dialog: DialogInterface, whichButton: Int) = {
+                val survey: Survey = adapterView.getItemAtPosition(position).asInstanceOf[Survey]
+                repository.remove(survey.id.getOrElse(-1L))
+                view.invalidate()
+              }
+            }
+          )
+          .setNegativeButton(
+            R.string.dialog_cancel,
+            new OnClickListener {
+              override def onClick(dialog: DialogInterface, whichButton: Int) = {}
+            }
+          )
+        true
+    }
+    add.onClick {
+      val intent = new Intent(SurveyList.this, classOf[SurveyView])
+      intent.putExtra("id", -1L)
+      intent.putExtra("name", "")
+      startActivity(intent)
+    }
+    setContentView(new SVerticalLayout += list += add)
   }
 }
