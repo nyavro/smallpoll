@@ -7,4 +7,10 @@
     <string name="dialog_cancel">Отменить</string>
     <string name="remove_question">Удалить вопрос?</string>
     <string name="save">Сохранить</string>
+    <string name="survey_name">Имя</string>
+    <string name="survey_questions">Список вопросов</string>
+    <string name="question_text">Вопрос</string>
+    <string name="question_answers">Возможные ответы</string>
+    <string name="multi_select">Несколько вариантов</string>
+    <string name="start">Запустить опрос</string>
 </resources>

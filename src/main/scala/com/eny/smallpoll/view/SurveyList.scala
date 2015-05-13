@@ -1,8 +1,6 @@
 package com.eny.smallpoll.view
 
-import android.app.AlertDialog.Builder
-import android.content.DialogInterface.OnClickListener
-import android.content.{DialogInterface, Intent}
+import android.content.Intent
 import android.view.View
 import android.widget.{AdapterView, ArrayAdapter}
 import com.eny.smallpoll.R
@@ -17,6 +15,30 @@ class SurveyList extends SActivity with Db {
   lazy val repository = new SurveyRepository(instance.getWritableDatabase)
 
   onCreate {
+    list.onItemClick {
+      (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
+        edit(adapterView.getItemAtPosition(position).asInstanceOf[Survey])
+    }
+    list.onItemLongClick {
+      (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
+        Alert(R.string.remove_survey).run(
+          () => remove(adapterView.getItemAtPosition(position).asInstanceOf[Survey])
+        )
+        true
+    }
+    add.setText(R.string.add)
+    add.onClick {
+      edit(Survey(None, ""))
+    }
+    setContentView(new SVerticalLayout += list += add)
+  }
+  def edit(survey: Survey) = {
+    val intent = new Intent(SurveyList.this, classOf[SurveyView])
+    intent.putExtra("id", survey.id.getOrElse(-1L))
+    intent.putExtra("name", survey.name)
+    startActivity(intent)
+  }
+  def update() = {
     list.setAdapter(
       new ArrayAdapter[Survey](
         this,
@@ -24,46 +46,13 @@ class SurveyList extends SActivity with Db {
         repository.list().toArray
       )
     )
-    list.onItemClick {
-      (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
-        val intent = new Intent(SurveyList.this, classOf[SurveyView])
-        val survey: Survey = adapterView.getItemAtPosition(position).asInstanceOf[Survey]
-        intent.putExtra("id", survey.id.getOrElse(-1L))
-        intent.putExtra("name", survey.name)
-        startActivity(intent)
-    }
-    list.onItemLongClick {
-      (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
-        new Builder(SurveyList.this)
-          .setIcon(android.R.attr.alertDialogIcon)
-          .setTitle(R.string.remove_survey)
-          .setPositiveButton(
-            R.string.dialog_ok,
-            new OnClickListener() {
-              override def onClick(dialog: DialogInterface, whichButton: Int) = {
-                val survey: Survey = adapterView.getItemAtPosition(position).asInstanceOf[Survey]
-                repository.remove(survey.id.getOrElse(-1L))
-                view.invalidate()
-              }
-            }
-          )
-          .setNegativeButton(
-            R.string.dialog_cancel,
-            new OnClickListener {
-              override def onClick(dialog: DialogInterface, whichButton: Int) = {}
-            }
-          )
-          .create
-          .show()
-        true
-    }
-    add.setText(R.string.add)
-    add.onClick {
-      val intent = new Intent(SurveyList.this, classOf[SurveyView])
-      intent.putExtra("id", -1L)
-      intent.putExtra("name", "")
-      startActivity(intent)
-    }
-    setContentView(new SVerticalLayout += list += add)
+  }
+  def remove(survey:Survey) = {
+    repository.remove(survey.id.getOrElse(-1))
+    update()
+  }
+  override def onResume() = {
+    super.onResume()
+    update()
   }
 }

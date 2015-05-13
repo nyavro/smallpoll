@@ -1,14 +1,12 @@
 package com.eny.smallpoll.view
 
-import android.app.AlertDialog.Builder
-import android.content.DialogInterface.OnClickListener
-import android.content.{DialogInterface, Intent}
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.{AdapterView, ArrayAdapter}
 import com.eny.smallpoll.R
-import com.eny.smallpoll.model.{Question, Answer}
+import com.eny.smallpoll.model.Answer
 import com.eny.smallpoll.repository.AnswerRepository
 import org.scaloid.common._
 
@@ -16,62 +14,40 @@ class QuestionView extends SActivity with Db {
 
   lazy val text = new SEditText
   lazy val answers = new SListView
+  lazy val multi = new SCheckBox
   lazy val add = new SButton
   lazy val repository = new AnswerRepository(instance.getWritableDatabase)
   var id:Long = -1
-
   onCreate {
     text.setText(getIntent.getStringExtra("text"))
     id = getIntent.getLongExtra("id", -1)
-    Log.d("smallpoll", s"Answer long clicked")
+    multi.setChecked(getIntent.getBooleanExtra("multi", false))
+    multi.setText(R.string.multi_select)
     answers.onItemClick {
       (adapterView: AdapterView[_], view: View, position: Int, id: Long) =>
-        val intent = new Intent(QuestionView.this, classOf[AnswerView])
-        val answer = adapterView.getItemAtPosition(position).asInstanceOf[Answer]
-        intent.putExtra("id", answer.id.getOrElse(-1L))
-        intent.putExtra("text", answer.text)
-        intent.putExtra("questionId", answer.questionId)
-        intent.putExtra("indx", position)
-        startActivity(intent)
+        edit(adapterView.getItemAtPosition(position).asInstanceOf[Answer])
     }
     answers.onItemLongClick {
       (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
-        new Builder(QuestionView.this)
-          .setIcon(android.R.drawable.alert_light_frame)
-          .setTitle(R.string.remove_survey)
-          .setPositiveButton(
-            R.string.dialog_ok,
-            new OnClickListener() {
-              override def onClick(dialog: DialogInterface, whichButton: Int) = {
-                val answer = adapterView.getItemAtPosition(position).asInstanceOf[Answer]
-                repository.remove(answer.id.getOrElse(-1L))
-                update()
-              }
-            }
-          )
-          .setNegativeButton(
-            R.string.dialog_cancel,
-            new OnClickListener {
-              override def onClick(dialog: DialogInterface, whichButton: Int) = {}
-            }
-          )
-          .create()
-          .show()
+        Alert(R.string.remove_survey).run(() => remove(adapterView.getItemAtPosition(position).asInstanceOf[Answer]))
         true
     }
     add.setText(R.string.add)
     add.onClick {
-      val intent = new Intent(QuestionView.this, classOf[AnswerView])
-      intent.putExtra("id", -1L)
-      intent.putExtra("text", "")
-      intent.putExtra("questionId", id)
-      intent.putExtra("indx", answers.getAdapter.getCount)
-      startActivity(intent)
+      edit(Answer(None, "", answers.getAdapter.getCount, id))
     }
-    contentView(new SVerticalLayout += text += answers += add)
+    contentView(new SVerticalLayout += new STextView(R.string.question_text) += text += new STextView(R.string.question_answers) += answers += multi += add)
   }
-  override def onResume() {
-    super.onResume()
+  def edit(answer:Answer): Unit = {
+    val intent = new Intent(QuestionView.this, classOf[AnswerView])
+    intent.putExtra("id", answer.id.getOrElse(-1L))
+    intent.putExtra("text", answer.text)
+    intent.putExtra("questionId", answer.questionId)
+    intent.putExtra("indx", answer.index)
+    startActivity(intent)
+  }
+  def remove(answer:Answer): Unit = {
+    repository.remove(answer.id.getOrElse(-1L))
     update()
   }
   def update() = {
@@ -83,6 +59,10 @@ class QuestionView extends SActivity with Db {
         repository.list(id).toArray
       )
     )
+  }
+  override def onResume() {
+    super.onResume()
+    update()
   }
   override def onSaveInstanceState(bundle:Bundle) = {
     super.onSaveInstanceState(bundle)
