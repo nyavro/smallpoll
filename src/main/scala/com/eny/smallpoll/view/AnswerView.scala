@@ -24,6 +24,4 @@ class AnswerView extends SActivity with Db {
     }
     contentView(new SVerticalLayout += text += save)
   }
-
-  def asOption(id:Long) = if (id.equals(-1L)) None else Some(id)
 }

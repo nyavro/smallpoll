@@ -14,4 +14,6 @@ trait Db extends SContext {
     Log.d("smallpoll", "Initializing DB instance")
     new SmallpollDatabase(ctx)
   }
+
+  def asOption(id:Long) = if (id.equals(-1L)) None else Some(id)
 }

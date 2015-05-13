@@ -16,7 +16,7 @@ class SurveyView extends SActivity with Db {
   lazy val add = new SButton
   lazy val start = new SButton
   lazy val repository = new QuestionRepository(instance.getWritableDatabase)
-  var id = -1L
+  var surveyId = -1L
   def edit(question:Question) = {
     val intent = new Intent(SurveyView.this, classOf[QuestionView])
     intent.putExtra("id", question.id.getOrElse(-1L))
@@ -27,7 +27,8 @@ class SurveyView extends SActivity with Db {
   }
   onCreate {
     name.setText(getIntent.getStringExtra("name"))
-    val id = getIntent.getLongExtra("id", -1)
+    name.setActivated(false)
+    surveyId = getIntent.getLongExtra("id", -1)
     questions.onItemClick {
       (adapterView: AdapterView[_], view: View, position: Int, id: Long) =>
         edit(adapterView.getItemAtPosition(position).asInstanceOf[Question])
@@ -39,12 +40,12 @@ class SurveyView extends SActivity with Db {
     }
     add.setText(R.string.add)
     add.onClick {
-      edit(Question(None, "", multi = false, id))
+      edit(Question(None, "", multi = false, surveyId))
     }
     start.setText(R.string.start)
     start.onClick {
       val intent = new Intent(SurveyView.this, classOf[SurveyRunView])
-      intent.putExtra("id", id)
+      intent.putExtra("surveyId", surveyId)
       startActivity(intent)
     }
     contentView(
@@ -62,7 +63,7 @@ class SurveyView extends SActivity with Db {
       new ArrayAdapter[Question](
         this,
         android.R.layout.simple_list_item_1,
-        repository.list(id).toArray
+        repository.list(surveyId).toArray
       )
     )
   }
@@ -76,9 +77,9 @@ class SurveyView extends SActivity with Db {
   }
   override def onSaveInstanceState(bundle:Bundle) = {
     super.onSaveInstanceState(bundle)
-    bundle.putLong("id", id)
+    bundle.putLong("surveyId", surveyId)
   }
   override def onRestoreInstanceState(bundle:Bundle) = {
-    id = bundle.getLong("id")
+    surveyId = bundle.getLong("surveyId")
   }
 }

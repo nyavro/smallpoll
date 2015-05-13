@@ -9,6 +9,15 @@ import com.eny.smallpoll.model.Question
  */
 class QuestionRepository(db:SQLiteDatabase) extends CursorConversion {
 
+  val Table = "question"
+
+  def load(questionId: Long):Question = {
+    val cursor = db.rawQuery("SELECT _id, txt, multi, survey_id FROM question WHERE _id=?", Array(questionId.toString))
+    cursor.moveToFirst
+    convert(cursor)
+  }
+
+
   def remove(id: Long):Unit = {
     db.delete("question", "_id=?", Array(id.toString))
   }
