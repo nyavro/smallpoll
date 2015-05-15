@@ -39,18 +39,11 @@ class SurveyRunView extends SActivity with Db {
     initArguments()
     next.setText(R.string.next)
     next.onClick {
-      def selectedIds(i:Int, ids:SparseBooleanArray):List[Long] = {
-        if(i<ids.size) {
-          if(ids.valueAt(i)) {
-            val orElse: Long = multiChoice.getAdapter.getItem(i).asInstanceOf[Answer].id.getOrElse(-1L)
-            orElse::selectedIds(i+1, ids)
-          } else {
-            selectedIds(i+1, ids)
-          }
-        } else {
-          Nil
-        }
-      }
+      def selectedIds(i:Int, ids:SparseBooleanArray):List[Long] =
+        if(i<ids.size)
+          if(ids.valueAt(i)) multiChoice.getAdapter.getItem(i).asInstanceOf[Answer].id.getOrElse(-1L)::selectedIds(i+1, ids)
+          else selectedIds(i+1, ids)
+        else Nil
       selectedIds(0, multiChoice.getCheckedItemPositions).map {
         answerId => resultRepository.save(Result(new Date, answerId))
       }
