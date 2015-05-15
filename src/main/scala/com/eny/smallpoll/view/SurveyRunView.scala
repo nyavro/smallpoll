@@ -2,14 +2,14 @@ package com.eny.smallpoll.view
 
 import java.util.Date
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.SparseBooleanArray
 import android.view.View
-import android.widget.{AdapterView, AbsListView}
+import android.widget.{AbsListView, AdapterView}
 import com.eny.smallpoll.R
 import com.eny.smallpoll.model.{Answer, Result}
-import com.eny.smallpoll.repository.{AnswerRepository, QuestionRepository, ResultRepository}
+import com.eny.smallpoll.report.{Marker, MarkerRepository, ResultRepository}
+import com.eny.smallpoll.repository.{AnswerRepository, QuestionRepository}
 import org.scaloid.common._
 
 /**
@@ -19,6 +19,7 @@ class SurveyRunView extends SActivity with Db {
   lazy val questionRepository = new QuestionRepository(instance.getReadableDatabase)
   lazy val answerRepository = new AnswerRepository(instance.getReadableDatabase)
   lazy val resultRepository = new ResultRepository(instance.getWritableDatabase)
+  lazy val markerRepository = new MarkerRepository(instance.getWritableDatabase)
   lazy val text = new STextView
   lazy val multiChoice = new SListView
   lazy val singleChoice = new SListView
@@ -27,6 +28,7 @@ class SurveyRunView extends SActivity with Db {
   lazy val layout = new SVerticalLayout
   var questionIds = Array[Long]()
   var surveyId = -1L
+  var session = -1L
 
   def initArguments() = {
     surveyId = getIntent.getLongExtra("surveyId", -1L)
@@ -81,6 +83,7 @@ class SurveyRunView extends SActivity with Db {
       singleChoice.setVisibility(View.GONE)
       next.setVisibility(View.GONE)
       text.setVisibility(View.GONE)
+      markerRepository.save(Marker(session, new Date, start = false, surveyId))
     }
     else {
       val question = questionRepository.load(questionIds.head)
@@ -108,10 +111,12 @@ class SurveyRunView extends SActivity with Db {
     super.onSaveInstanceState(bundle)
     bundle.putLong("suveyId", surveyId)
     bundle.putLongArray("questionIds", questionIds)
+    bundle.putLong("session", session)
   }
   override def onRestoreInstanceState(bundle:Bundle) = {
     super.onRestoreInstanceState(bundle)
     surveyId = bundle.getLong("surveyId")
     questionIds = Array(bundle.getLong("questionIds"))
+    session = bundle.getLong("session")
   }
 }

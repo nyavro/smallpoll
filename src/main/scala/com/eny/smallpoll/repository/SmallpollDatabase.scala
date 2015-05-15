@@ -17,6 +17,7 @@ class SmallpollDatabase(context:Context, name:String, version:Int) extends SQLit
     db.execSQL("CREATE TABLE question (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null, multi boolean not null, survey_id LONG NOT NULL, FOREIGN KEY(survey_id) REFERENCES survey(_id) ON DELETE CASCADE)")
     db.execSQL("CREATE TABLE answer (_id INTEGER PRIMARY KEY, txt text not null, indx integer not null, question_id LONG NOT NULL, FOREIGN KEY(question_id) REFERENCES question(_id) ON DELETE CASCADE)")
     db.execSQL("CREATE TABLE result (date integer not null, answer_id LONG NOT NULL, FOREIGN KEY(answer_id) REFERENCES answer(_id) ON DELETE CASCADE)")
+    db.execSQL("CREATE TABLE marker (session LONG NOT NULL, date INTEGER NOT NULL, start BOOLEAN NOT NULL, survey_id LONG NOT NULL, FOREIGN KEY(survey_id) REFERENCES survey(_id) ON DELETE CASCADE)")
     saveSurvey(
       db,
       Survey(

@@ -14,5 +14,9 @@
     <string name="multi_select">Несколько вариантов</string>
     <string name="start">Запустить опрос</string>
     <string name="next">Далее</string>
-    <string name="thanks">Спасибо за участие в опросе!</string>
+        <string name="thanks">Спасибо за участие в опросе!</string>
+        <string name="welcome">Для начала опроса коснитесь экрана</string>
+    <string name="from">Начало периода</string>
+    <string name="to">Конец периода</string>
+    <string name="send">Отправить</string>
 </resources>

@@ -9,12 +9,20 @@ import com.eny.smallpoll.model.Survey
  */
 class SurveyRepository(db:SQLiteDatabase) extends CursorConversion {
 
+  val Table = "survey"
+
   def remove(id: Long):Unit = {
-    db.delete("survey", "_id=?", Array(id.toString))
+    db.delete(Table, "_id=?", Array(id.toString))
   }
 
   def list(): List[Survey] = {
-    val cursor = db.query("survey", Array("_id", "name"), null, null, null, null, null)
+    val cursor = db.query(Table, Array("_id", "name"), null, null, null, null, null)
+    cursor.moveToFirst
+    toList(cursor, convert)
+  }
+  
+  def list(surveyIds:Iterable[Long]): List[Survey] = {
+    val cursor = db.rawQuery(s"SELECT _id, name FROM $Table WHERE _id IN (?)", Array(surveyIds.mkString(",").toString))
     cursor.moveToFirst
     toList(cursor, convert)
   }
@@ -23,9 +31,9 @@ class SurveyRepository(db:SQLiteDatabase) extends CursorConversion {
     val values = Values(Map("name"->survey.name)).content
     survey.id match {
       case Some(id) =>
-        db.update("survey", values, "_id=?", Array(id.toString))
+        db.update(Table, values, "_id=?", Array(id.toString))
       case None =>
-        db.insert("survey", null, values)
+        db.insert(Table, null, values)
     }
   }
 

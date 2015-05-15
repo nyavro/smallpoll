@@ -28,6 +28,12 @@ class QuestionRepository(db:SQLiteDatabase) extends CursorConversion {
     toList(cursor, convert)
   }
 
+  def list(questionIds: Iterable[Long]): List[Question] = {
+    val cursor = db.rawQuery("SELECT _id, txt, multi, survey_id FROM question WHERE _id IN (?)", Array(questionIds.mkString(",").toString))
+    cursor.moveToFirst
+    toList(cursor, convert)
+  }
+
   def save(question: Question): Unit = {
     val values = Values(Map("txt"->question.text, "multi"->question.multi)).content
     question.id match {

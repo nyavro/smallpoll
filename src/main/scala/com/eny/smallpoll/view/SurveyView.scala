@@ -22,7 +22,7 @@ class SurveyView extends SActivity with Db {
     intent.putExtra("id", question.id.getOrElse(-1L))
     intent.putExtra("text", question.text)
     intent.putExtra("multi", question.multi)
-    intent.putExtra("survey", question.survey)
+    intent.putExtra("survey", question.surveyId)
     startActivity(intent)
   }
   onCreate {

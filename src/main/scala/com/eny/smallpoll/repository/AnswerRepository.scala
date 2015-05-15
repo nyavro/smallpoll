@@ -12,9 +12,7 @@ class AnswerRepository(db:SQLiteDatabase) extends CursorConversion {
   def save(answer: Answer):Unit = {
     val content = Values(Map("txt" -> answer.text, "indx" -> answer.index, "question_id" -> answer.questionId)).content
     answer.id match {
-      case Some(id) => {
-        db.update("answer", content, "_id=?", Array(id.toString))
-      }
+      case Some(id) => db.update("answer", content, "_id=?", Array(id.toString))
       case None => db.insert("answer", null, content)
     }
   }
@@ -25,6 +23,12 @@ class AnswerRepository(db:SQLiteDatabase) extends CursorConversion {
 
   def list(questionId: Long): List[Answer] = {
     val cursor = db.rawQuery("SELECT _id, txt, indx, question_id FROM answer WHERE question_id=?", Array(questionId.toString))
+    cursor.moveToFirst
+    toList(cursor, convert)
+  }
+
+  def list(answerIds: Iterable[Long]): List[Answer] = {
+    val cursor = db.rawQuery("SELECT _id, txt, indx, question_id FROM answer WHERE _id IN (?)", Array(answerIds.mkString(",")))
     cursor.moveToFirst
     toList(cursor, convert)
   }
