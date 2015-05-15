@@ -19,4 +19,7 @@
     <string name="from">Начало периода</string>
     <string name="to">Конец периода</string>
     <string name="send">Отправить</string>
+        <string name="email">fake@mail.fake</string>
+    <string name="password_hint">Введите пароль</string>
+    <string name="login">Войти</string>
 </resources>
