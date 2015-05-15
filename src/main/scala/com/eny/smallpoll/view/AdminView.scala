@@ -1,9 +1,7 @@
 package com.eny.smallpoll.view
 
-import java.security.MessageDigest
-
-import android.content.{Context, Intent}
-import android.text.InputType
+import android.content.Intent
+import android.view.{Menu, MenuItem}
 import com.eny.smallpoll.R
 import org.scaloid.common._
 
@@ -23,4 +21,15 @@ class AdminView extends SActivity with Db {
     }
     setContentView(new SVerticalLayout += surveys += report)
   }
+
+  override def onCreateOptionsMenu(menu:Menu):Boolean = {
+    getMenuInflater.inflate(R.menu.main, menu)
+    true
+  }
+
+  override def onOptionsItemSelected(item:MenuItem):Boolean =
+    item.getItemId match {
+      case R.id.preferences => new Intent().start[PreferencesView];true
+      case _ => super.onOptionsItemSelected(item)
+    }
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/survey_run_options">
+        <EditTextPreference
+            android:key="welcome"
+            android:title="@string/welcome"
+            android:summary="@string/welcome_summary"
+            android:dialogTitle="@string/edit_welcome"
+        />
+        <EditTextPreference
+            android:key="thanks"
+            android:title="@string/thanks"
+            android:summary="@string/thanks_summary"
+            android:dialogTitle="@string/edit_thanks"
+        />
+        <EditTextPreference
+            android:key="end_screen_delay"
+            android:title="@string/end_screen_delay"
+            android:summary="@string/end_screen_delay_summary"
+            android:dialogTitle="@string/edit_end_screen_delay"
+            android:inputType="number"
+        />
+        <EditTextPreference
+            android:key="end_screen_delay"
+            android:title="@string/restart_delay"
+            android:summary="@string/restart_delay_summary"
+            android:dialogTitle="@string/edit_restart_delay"
+            android:inputType="number"
+        />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/report_options">
+        <EditTextPreference
+            android:key="email_to"
+            android:title="@string/email"
+            android:summary="@string/email_summary"
+            android:dialogTitle="@string/edit_email"
+        />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/admin_options">
+        <com.eny.smallpoll.view.EditPasswordPreference
+            android:key="app_password"
+            android:title="@string/app_password"
+            android:summary="@string/password_summary"
+            android:dialogTitle="@string/edit_password"
+        />
+    </PreferenceCategory>
+</PreferenceScreen>

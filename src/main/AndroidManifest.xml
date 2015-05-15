@@ -17,6 +17,7 @@
 		<activity android:name="com.eny.smallpoll.view.QuestionView"	android:label="QuestionView" android:windowSoftInputMode="stateHidden"/>
 		<activity android:name="com.eny.smallpoll.view.AnswerView"		android:label="AnswerView" android:windowSoftInputMode="stateHidden"/>
 		<activity android:name="com.eny.smallpoll.view.SurveyRunView"	android:label="SurveyRunView"/>
+		<activity android:name="com.eny.smallpoll.view.PreferencesView"	android:label="PreferencesView"/>
 	</application>
 	<uses-sdk android:minSdkVersion="16" />
 
