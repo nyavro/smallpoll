@@ -2,14 +2,13 @@ package com.eny.smallpoll.view
 
 import java.security.MessageDigest
 
-import android.content.{Context, Intent}
+import android.content.Intent
 import android.text.InputType
 import com.eny.smallpoll.R
 import org.scaloid.common._
 
 class PasswordView extends SActivity with Db {
 
-  val PreferencesName = "SPPrefs"
   lazy val password = new SEditText
   lazy val login = new SButton
 
@@ -21,7 +20,7 @@ class PasswordView extends SActivity with Db {
     login.setText(R.string.login)
     login.onClick {
       login.getText
-      if(digest(password.text.toString)==new Preferences(getSharedPreferences(PreferencesName, Context.MODE_PRIVATE)).passwordDigest) {
+      if(digest(password.text.toString)==new Preferences(defaultSharedPreferences).passwordDigest) {
         startActivity(new Intent(PasswordView.this, classOf[SurveyList]))
       } else {
         Thread.sleep(3000)

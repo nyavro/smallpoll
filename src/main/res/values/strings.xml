@@ -22,4 +22,6 @@
         <string name="email">fake@mail.fake</string>
     <string name="password_hint">Введите пароль</string>
     <string name="login">Войти</string>
+    <string name="surveys">Список опросов</string>
+    <string name="report">Сформировать отчёт</string>
 </resources>
