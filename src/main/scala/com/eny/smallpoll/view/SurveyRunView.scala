@@ -2,10 +2,13 @@ package com.eny.smallpoll.view
 
 import java.util.Date
 
+import android.content.Context
+import android.graphics.PixelFormat
 import android.os.Bundle
 import android.util.SparseBooleanArray
-import android.view.View
-import android.widget.{AbsListView, AdapterView}
+import android.view.WindowManager.LayoutParams
+import android.view._
+import android.widget.{AbsListView, AdapterView, RelativeLayout}
 import com.eny.smallpoll.R
 import com.eny.smallpoll.model.{Answer, Result}
 import com.eny.smallpoll.report.{Marker, MarkerRepository, ResultRepository}
@@ -37,12 +40,13 @@ class SurveyRunView extends SActivity with Db {
 
   onCreate {
     initArguments()
+    hideSystem()
     next.setText(R.string.next)
     next.onClick {
-      def selectedIds(i:Int, ids:SparseBooleanArray):List[Long] =
-        if(i<ids.size)
-          if(ids.valueAt(i)) multiChoice.getAdapter.getItem(i).asInstanceOf[Answer].id.getOrElse(-1L)::selectedIds(i+1, ids)
-          else selectedIds(i+1, ids)
+      def selectedIds(i: Int, ids: SparseBooleanArray): List[Long] =
+        if (i < ids.size)
+          if (ids.valueAt(i)) multiChoice.getAdapter.getItem(i).asInstanceOf[Answer].id.getOrElse(-1L) :: selectedIds(i + 1, ids)
+          else selectedIds(i + 1, ids)
         else Nil
       selectedIds(0, multiChoice.getCheckedItemPositions).map {
         answerId => resultRepository.save(Result(new Date, answerId))
@@ -51,7 +55,7 @@ class SurveyRunView extends SActivity with Db {
       update()
     }
     singleChoice.onItemClick {
-      (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
+      (adapterView: AdapterView[_], view: View, position: Int, id: Long) =>
         val answerId = singleChoice.getAdapter.getItem(position).asInstanceOf[Answer].id.getOrElse(-1L)
         resultRepository.save(Result(new Date, answerId))
         questionIds = questionIds.tail
@@ -60,7 +64,7 @@ class SurveyRunView extends SActivity with Db {
     multiChoice.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE)
     thanks.setText(R.string.thanks)
     layout.onClick {
-      if(questionIds.isEmpty) {
+      if (questionIds.isEmpty) {
         initArguments()
         update()
       }
@@ -68,6 +72,26 @@ class SurveyRunView extends SActivity with Db {
     contentView(
       layout += text += multiChoice += singleChoice += next += thanks
     )
+  }
+
+  def hideSystem() = {
+    getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN)
+    getActionBar.hide()
+    val params = new LayoutParams(
+      WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
+      WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+      PixelFormat.TRANSPARENT
+    )
+    params.gravity = Gravity.TOP
+    params.width = ViewGroup.LayoutParams.MATCH_PARENT
+    params.height = (50 * getResources.getDisplayMetrics.scaledDensity).toInt
+    getApplicationContext
+      .getSystemService(Context.WINDOW_SERVICE)
+      .asInstanceOf[WindowManager]
+      .addView(
+        new RelativeLayout(this),
+        params
+      )
   }
   def update():Unit = {
     if(questionIds.isEmpty) {
