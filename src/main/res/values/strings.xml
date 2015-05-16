@@ -43,4 +43,5 @@
     <string name="app_password">Пароль</string>
     <string name="password_summary">Пароль для входа в приложение</string>
     <string name="edit_password">Введите пароль для входа в приложение</string>
+    <string name="password_error">Введён неверный пароль. Попробуйте ещё раз!</string>
 </resources>

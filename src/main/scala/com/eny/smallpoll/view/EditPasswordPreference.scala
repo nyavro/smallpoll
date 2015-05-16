@@ -20,7 +20,7 @@ class EditPasswordPreference(ctx:Context, attrs:AttributeSet) extends DialogPref
 
   var password:EditText = _
   var passwordCheck:EditText = _
-  val DummyText = "aaaaaa"
+  val DummyText = "#z№ёф?7"
 
   override def onBindDialogView(view:View) = {
     password = view.findViewById(R.id.password).asInstanceOf[EditText]
@@ -59,8 +59,7 @@ class EditPasswordPreference(ctx:Context, attrs:AttributeSet) extends DialogPref
     if(positive) {
       val pwd = password.getText.toString
       if (!pwd.isEmpty) {
-        val preferences = new Preferences(getSharedPreferences)
-        preferences.password = new Digest(pwd).text
+        new Preferences(getSharedPreferences).password = new Digest(pwd).text
       }
     }
   }
