@@ -5,7 +5,8 @@ import android.content.{Context, DialogInterface}
 import android.preference.DialogPreference
 import android.text.{Editable, TextWatcher}
 import android.util.AttributeSet
-import android.view.View
+import android.view.{MotionEvent, View}
+import android.view.View.OnTouchListener
 import android.widget.EditText
 import com.eny.smallpoll.R
 import org.scaloid.common.Preferences
@@ -19,12 +20,15 @@ class EditPasswordPreference(ctx:Context, attrs:AttributeSet) extends DialogPref
 
   var password:EditText = _
   var passwordCheck:EditText = _
+  val DummyText = "aaaaaa"
 
   override def onBindDialogView(view:View) = {
     password = view.findViewById(R.id.password).asInstanceOf[EditText]
     passwordCheck = view.findViewById(R.id.password_check).asInstanceOf[EditText]
     password.setHint(R.string.password_hint)
     passwordCheck.setHint(R.string.password_check_hint)
+    password.setText(DummyText)
+    passwordCheck.setText(DummyText)
     val watcher = new TextWatcher {
       override def beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int): Unit = {}
       override def afterTextChanged(s: Editable): Unit = {}
@@ -37,15 +41,27 @@ class EditPasswordPreference(ctx:Context, attrs:AttributeSet) extends DialogPref
     }
     password.addTextChangedListener(watcher)
     passwordCheck.addTextChangedListener(watcher)
+    class ErasingListener(edit:EditText) extends OnTouchListener {
+      override def onTouch(v: View, event: MotionEvent): Boolean = {
+        if(edit.getText.toString==DummyText) {
+          edit.setText("")
+        }
+        false
+      }
+    }
+    password.setOnTouchListener(new ErasingListener(password))
+    passwordCheck.setOnTouchListener(new ErasingListener(passwordCheck))
     super.onBindDialogView(view)
   }
 
   override def onDialogClosed(positive:Boolean) = {
     super.onDialogClosed(positive)
-    val pwd = password.getText.toString
-    if(!pwd.isEmpty) {
-      val preferences = new Preferences(getSharedPreferences)
-      preferences.password = new Digest(pwd).text
+    if(positive) {
+      val pwd = password.getText.toString
+      if (!pwd.isEmpty) {
+        val preferences = new Preferences(getSharedPreferences)
+        preferences.password = new Digest(pwd).text
+      }
     }
   }
 }
