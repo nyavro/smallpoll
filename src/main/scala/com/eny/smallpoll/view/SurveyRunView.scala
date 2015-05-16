@@ -136,4 +136,7 @@ class SurveyRunView extends SActivity with Db {
     questionIds = Array(bundle.getLong("questionIds"))
     session = bundle.getLong("session")
   }
+  override def onBackPressed() = {
+    //Disable Back button
+  }
 }
