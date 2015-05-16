@@ -75,6 +75,7 @@ class SurveyRunView extends SActivity with Db {
   }
 
   def hideSystem() = {
+    new Lock(this)
     getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN)
     getActionBar.hide()
     val params = new LayoutParams(
