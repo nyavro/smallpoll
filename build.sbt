@@ -23,7 +23,9 @@ resolvers ++= Seq(Resolver.mavenLocal,
   Resolver.sonatypeRepo("snapshots"),
   Resolver.defaultLocal)
 
-libraryDependencies += "org.scaloid" %% "scaloid" % "4.0-RC1" withSources() withJavadoc()
+libraryDependencies ++= Seq(
+  "org.scaloid" %% "scaloid" % "4.0-RC1" withSources() withJavadoc()
+)
 
 // Override the run task with the android:run
 run <<= run in Android
