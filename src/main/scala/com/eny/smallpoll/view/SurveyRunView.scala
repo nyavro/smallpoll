@@ -143,8 +143,7 @@ class SurveyRunView extends SActivity with Db {
     layout.addOnGesturePerformedListener(
       new OnGesturePerformedListener {
         override def onGesturePerformed(overlay: GestureOverlayView, gesture: Gesture): Unit = {
-          val predictions = gestureLib.recognize(gesture)
-          predictions.map {
+          gestureLib.recognize(gesture).map {
             prediction =>
               if (prediction.score > 1.0) {
                 Toast.makeText(SurveyRunView.this, prediction.name, Toast.LENGTH_SHORT).show()
