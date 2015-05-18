@@ -35,10 +35,10 @@ class SurveyRunView extends SActivity with Db {
   lazy val thanks = new STextView
   lazy val layout = new SGestureOverlayView
   val handler = new Handler
-  val preferences = new Preferences(defaultSharedPreferences)
-  val EndDelay = preferences.end_screen_delay(10)
-  val InactivityDelay = preferences.inactivity_screen_delay(30)
-  val restartTimer = new Timer
+  lazy val preferences = new Preferences(defaultSharedPreferences)
+  lazy val EndDelay = preferences.end_screen_delay(10)
+  lazy val InactivityDelay = preferences.inactivity_screen_delay(30)
+  var restartTimer = new Timer
   var questionIds = Array[Long]()
   var surveyId = -1L
   var session = -1L
@@ -46,7 +46,6 @@ class SurveyRunView extends SActivity with Db {
   var gestureLib:GestureLibrary = _
 
   onCreate {
-    initArguments()
     hideSystem()
     next.setText(R.string.next)
     next.onClick {
@@ -80,13 +79,17 @@ class SurveyRunView extends SActivity with Db {
         update()
       }
     }
+    val linearLayout = new SLinearLayout()
+    linearLayout.setOrientation(linearLayout.VERTICAL)
+    linearLayout += text += multiChoice += singleChoice += next += thanks += welcome
     contentView(
-      layout += text += multiChoice += singleChoice += next += thanks += welcome
+      layout += linearLayout
     )
     enableUnlock()
   }
   def update():Unit = {
     restartTimer.cancel()
+    restartTimer = new Timer
     if(questionIds.isEmpty) {
       if(isStart) {
         welcome.setVisibility(View.VISIBLE)
@@ -107,7 +110,7 @@ class SurveyRunView extends SActivity with Db {
         text.setVisibility(View.GONE)
         markerRepository.save(Marker(session, new Date, start = false, surveyId))
         isStart = true
-        scheduleRestart(EndDelay)
+        scheduleRestart2(EndDelay)
       }
     }
     else {
@@ -181,6 +184,22 @@ class SurveyRunView extends SActivity with Db {
             new Runnable() {
               override def run(): Unit = {
                 initArguments()
+                update()
+              }
+            }
+          )
+        }
+      },
+      new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(delay))
+    )
+  }
+  def scheduleRestart2(delay: Int) = {
+    restartTimer.schedule(
+      new TimerTask {
+        override def run(): Unit = {
+          handler.post(
+            new Runnable() {
+              override def run(): Unit = {
                 update()
               }
             }
