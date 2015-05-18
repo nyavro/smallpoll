@@ -31,14 +31,14 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/report_options">
         <EditTextPreference
-            android:key="email_to"
+            android:key="sendto"
             android:title="@string/email"
             android:summary="@string/email_summary"
             android:dialogTitle="@string/edit_email"
         />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/admin_options">
-        <com.eny.smallpoll.view.EditPasswordPreference
+        <com.eny.smallpoll.view.components.EditPasswordPreference
             android:key="app_password"
             android:title="@string/app_password"
             android:summary="@string/password_summary"

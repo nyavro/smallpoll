@@ -9,7 +9,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.{DatePicker, TimePicker}
 import com.eny.smallpoll.R
-import com.eny.smallpoll.report.{MarkerRepository, Report, ResultRepository}
+import com.eny.smallpoll.report.{TableReport, MarkerRepository, Report, ResultRepository}
 import com.eny.smallpoll.repository.{AnswerRepository, QuestionRepository, SurveyRepository}
 import org.scaloid.common._
 
@@ -35,6 +35,11 @@ class ReportSendView extends SActivity with Db {
   lazy val timeFormat = {
     val local = new ThreadLocal[DateFormat]
     local.set(new SimpleDateFormat("HH:mm:ss"))
+    local
+  }
+  lazy val fullFormat = {
+    val local = new ThreadLocal[DateFormat]
+    local.set(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss"))
     local
   }
   var from:Date = _
@@ -87,8 +92,20 @@ class ReportSendView extends SActivity with Db {
       new DatePickerFragment(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), setTo).show(getFragmentManager, "datePicker")
     }
     send.onClick {
-      val answerResult = resultRepo.report(new Date(fromDate.getDrawingTime), new Date(toDate.getDrawingTime))
-      new Report(markerRepo, resultRepo, answerRepo, questionRepo, surveyRepo).result(from, to)
+      val list = new Report(markerRepo, resultRepo, answerRepo, questionRepo, surveyRepo).result(from, to)
+      val fromStr = fullFormat.get.format(from)
+      val toStr = fullFormat.get.format(to)
+      val body =
+        s"""
+           |<html>
+           |  <body>
+           |    <div>Опросов за период с $fromStr по $toStr: ${list.size}</div>
+           |    ${new TableReport(list).toString}
+           |  </body>
+           |</html>
+           |
+        """.stripMargin
+      sendMail(s"Отчёт за период с $fromStr по $toStr", body)
       finish()
     }
     contentView(new SVerticalLayout += fromText += fromDate += fromTime += toText += toDate += toTime += send)
@@ -104,13 +121,14 @@ class ReportSendView extends SActivity with Db {
     toTime.setText(timeFormat.get.format(to))
   }
 
-  def sendMail() = {
+  def sendMail(subject:String, body:String) = {
+    val preferences = new Preferences(defaultSharedPreferences)
     val intent = new Intent(Intent.ACTION_SEND)
     intent.setType("message/rfc822")
-    intent.putExtra(Intent.EXTRA_EMAIL, Array("e.nyavro@gmail.com"))
-    intent.putExtra(Intent.EXTRA_SUBJECT, "subject of email")
-    intent.putExtra(Intent.EXTRA_TEXT, "body of email")
-    startActivity(Intent.createChooser(intent, "Send mail..."))
+    intent.putExtra(Intent.EXTRA_EMAIL, Array(preferences.sendto("")))
+    intent.putExtra(Intent.EXTRA_SUBJECT, subject)
+    intent.putExtra(Intent.EXTRA_TEXT, body)
+    startActivity(Intent.createChooser(intent, R.string.send_mail_title))
   }
 
   class TimePickerFragment(h:Int, m:Int, onSet: (Int, Int)=> Unit) extends DialogFragment with TimePickerDialog.OnTimeSetListener {

@@ -1,14 +1,15 @@
-package com.eny.smallpoll.view
+package com.eny.smallpoll.view.components
 
 import android.app.AlertDialog
 import android.content.{Context, DialogInterface}
 import android.preference.DialogPreference
 import android.text.{Editable, TextWatcher}
 import android.util.AttributeSet
-import android.view.{MotionEvent, View}
 import android.view.View.OnTouchListener
+import android.view.{MotionEvent, View}
 import android.widget.EditText
 import com.eny.smallpoll.R
+import com.eny.smallpoll.view.Digest
 import org.scaloid.common.Preferences
 
 /**
