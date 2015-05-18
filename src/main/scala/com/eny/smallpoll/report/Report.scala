@@ -29,4 +29,26 @@ class Report(markers:MarkerRepository, results:ResultRepository, answers:AnswerR
       survey => SurveyReport(from, to, survey.name, markers.count(from, to, survey.id.getOrElse(-1L)), questionsMap(survey.id.getOrElse(-1)))
     }
   }
+  def result2(from:Date, to:Date): List[SurveyReport] = {
+    results
+      .fullReport(from, to)
+      .groupBy(item => (item._1,item._2))
+      .map {
+        case ((id, name), qs) =>
+          SurveyReport(from, to, name, markers.count(from, to, id),
+            qs
+              .groupBy(_._3)
+              .map {
+                case (questionTxt, answerList) => QuestionReport(questionTxt,
+                    answerList
+                      .map {
+                        case (_, _, q, a, c) => AnswerReport(a, c)
+                      }
+                  )
+              }
+              .toList
+          )
+      }
+      .toList
+  }
 }
