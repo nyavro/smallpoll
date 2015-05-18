@@ -9,8 +9,12 @@ import android.widget.FrameLayout
  * Created by eny on 16.05.15.
  */
 class Lock(activity:Activity) {
-  new OverlayDialog(activity).show()
-  
+  val overlay = new OverlayDialog(activity)
+
+  def lock() = overlay.show()
+
+  def release() = overlay.dismiss()
+
   class OverlayDialog(activity:Activity) extends AlertDialog(activity) {
     val params = getWindow.getAttributes
     params.`type` = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR
