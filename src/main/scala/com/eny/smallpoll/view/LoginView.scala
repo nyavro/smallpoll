@@ -21,7 +21,7 @@ class LoginView extends SActivity with Db {
     error.setTextColor(Color.RED)
     login.setText(R.string.login)
     login.onClick {
-      if(new Digest(password.text.toString).text==new Preferences(defaultSharedPreferences).password("12345")) {
+      if(new Digest(password.text.toString).text==new Preferences(defaultSharedPreferences).password("gdyb21LQTcIANtvYMT7QVQ==\n")) {
         startActivity(new Intent(LoginView.this, classOf[AdminView]))
       } else {
         Thread.sleep(2000)
