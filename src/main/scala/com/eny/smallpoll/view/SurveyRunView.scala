@@ -1,10 +1,11 @@
 package com.eny.smallpoll.view
 
-import java.util.Date
+import java.util.concurrent.TimeUnit
+import java.util.{TimerTask, Timer, Date}
 
 import android.content.Context
 import android.graphics.PixelFormat
-import android.os.Bundle
+import android.os.{Handler, Bundle}
 import android.util.SparseBooleanArray
 import android.view.WindowManager.LayoutParams
 import android.view._
@@ -27,11 +28,18 @@ class SurveyRunView extends SActivity with Db {
   lazy val multiChoice = new SListView
   lazy val singleChoice = new SListView
   lazy val next = new SButton
+  lazy val welcome = new STextView
   lazy val thanks = new STextView
   lazy val layout = new SVerticalLayout
   var questionIds = Array[Long]()
   var surveyId = -1L
   var session = -1L
+  val restartTimer = new Timer
+  var isStart = true
+  val handler = new Handler
+  val preferences = new Preferences(defaultSharedPreferences)
+  val EndDelay = preferences.end_screen_delay(10)
+  val InactivityDelay = preferences.inactivity_screen_delay(30)
 
   def initArguments() = {
     surveyId = getIntent.getLongExtra("surveyId", -1L)
@@ -62,18 +70,67 @@ class SurveyRunView extends SActivity with Db {
         update()
     }
     multiChoice.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE)
-    thanks.setText(R.string.thanks)
+    thanks.setText(preferences.thanks(R.string.default_thanks))
+    welcome.setText(preferences.welcome(R.string.default_welcome))
     layout.onClick {
       if (questionIds.isEmpty) {
+        if(isStart) {
+
+        }
         initArguments()
         update()
       }
     }
     contentView(
-      layout += text += multiChoice += singleChoice += next += thanks
+      layout += text += multiChoice += singleChoice += next += thanks += welcome
     )
-  }
 
+  }
+  def update():Unit = {
+    restartTimer.cancel()
+    if(questionIds.isEmpty) {
+      if(isStart) {
+        welcome.setVisibility(View.VISIBLE)
+        thanks.setVisibility(View.GONE)
+        multiChoice.setVisibility(View.GONE)
+        singleChoice.setVisibility(View.GONE)
+        next.setVisibility(View.GONE)
+        text.setVisibility(View.GONE)
+        markerRepository.save(Marker(session, new Date, start = true, surveyId))
+        isStart = false
+      }
+      else {
+        welcome.setVisibility(View.GONE)
+        thanks.setVisibility(View.VISIBLE)
+        multiChoice.setVisibility(View.GONE)
+        singleChoice.setVisibility(View.GONE)
+        next.setVisibility(View.GONE)
+        text.setVisibility(View.GONE)
+        markerRepository.save(Marker(session, new Date, start = false, surveyId))
+        isStart = true
+        scheduleRestart(EndDelay)
+      }
+    }
+    else {
+      scheduleRestart(InactivityDelay)
+      val question = questionRepository.load(questionIds.head)
+      val answers = answerRepository.list(question.id.get)
+      text.setText(question.text)
+      if(question.multi) {
+        multiChoice.setAdapter(new SArrayAdapter(answers.toArray, android.R.layout.simple_list_item_multiple_choice))
+        multiChoice.setVisibility(View.VISIBLE)
+        singleChoice.setVisibility(View.GONE)
+        next.setVisibility(View.VISIBLE)
+      } else {
+        singleChoice.setAdapter(new SArrayAdapter(answers.toArray))
+        multiChoice.setVisibility(View.GONE)
+        singleChoice.setVisibility(View.VISIBLE)
+        next.setVisibility(View.GONE)
+      }
+      text.setVisibility(View.VISIBLE)
+      thanks.setVisibility(View.GONE)
+    }
+  }
   def hideSystem() = {
     new Lock(this).lock()
     getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN)
@@ -94,33 +151,22 @@ class SurveyRunView extends SActivity with Db {
         params
       )
   }
-  def update():Unit = {
-    if(questionIds.isEmpty) {
-      thanks.setVisibility(View.VISIBLE)
-      multiChoice.setVisibility(View.GONE)
-      singleChoice.setVisibility(View.GONE)
-      next.setVisibility(View.GONE)
-      text.setVisibility(View.GONE)
-      markerRepository.save(Marker(session, new Date, start = false, surveyId))
-    }
-    else {
-      val question = questionRepository.load(questionIds.head)
-      val answers = answerRepository.list(question.id.get)
-      text.setText(question.text)
-      if(question.multi) {
-        multiChoice.setAdapter(new SArrayAdapter(answers.toArray, android.R.layout.simple_list_item_multiple_choice))
-        multiChoice.setVisibility(View.VISIBLE)
-        singleChoice.setVisibility(View.GONE)
-        next.setVisibility(View.VISIBLE)
-      } else {
-        singleChoice.setAdapter(new SArrayAdapter(answers.toArray))
-        multiChoice.setVisibility(View.GONE)
-        singleChoice.setVisibility(View.VISIBLE)
-        next.setVisibility(View.GONE)
-      }
-      text.setVisibility(View.VISIBLE)
-      thanks.setVisibility(View.GONE)
-    }
+  def scheduleRestart(delay: Int) = {
+    restartTimer.schedule(
+      new TimerTask {
+        override def run(): Unit = {
+          handler.post(
+            new Runnable() {
+              override def run(): Unit = {
+                initArguments()
+                update()
+              }
+            }
+          )
+        }
+      },
+      new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(delay))
+    )
   }
   onResume {
     update()
@@ -130,12 +176,14 @@ class SurveyRunView extends SActivity with Db {
     bundle.putLong("suveyId", surveyId)
     bundle.putLongArray("questionIds", questionIds)
     bundle.putLong("session", session)
+    bundle.putBoolean("isStart", isStart)
   }
   override def onRestoreInstanceState(bundle:Bundle) = {
     super.onRestoreInstanceState(bundle)
     surveyId = bundle.getLong("surveyId")
     questionIds = Array(bundle.getLong("questionIds"))
     session = bundle.getLong("session")
+    isStart = bundle.getBoolean("isStart")
   }
   override def onBackPressed() = {
     //Disable Back button

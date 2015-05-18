@@ -22,7 +22,7 @@
             android:inputType="number"
         />
         <EditTextPreference
-            android:key="end_screen_delay"
+            android:key="inactivity_screen_delay"
             android:title="@string/restart_delay"
             android:summary="@string/restart_delay_summary"
             android:dialogTitle="@string/edit_restart_delay"

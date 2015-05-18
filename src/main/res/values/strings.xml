@@ -45,4 +45,6 @@
     <string name="edit_password">Введите пароль для входа в приложение</string>
     <string name="password_error">Введён неверный пароль. Попробуйте ещё раз!</string>
     <string name="send_mail_title">Отправить сообщение</string>
+    <string name="default_welcome">Для начала опроса коснитесь экрана</string>
+    <string name="default_thanks">Благодарим за участие в опросе</string>
 </resources>
