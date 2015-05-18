@@ -84,7 +84,6 @@ class SurveyRunView extends SActivity with Db {
     contentView(
       layout += text += multiChoice += singleChoice += next += thanks += welcome
     )
-
   }
   def update():Unit = {
     restartTimer.cancel()
@@ -129,6 +128,7 @@ class SurveyRunView extends SActivity with Db {
       }
       text.setVisibility(View.VISIBLE)
       thanks.setVisibility(View.GONE)
+      welcome.setVisibility(View.GONE)
     }
   }
   def hideSystem() = {
