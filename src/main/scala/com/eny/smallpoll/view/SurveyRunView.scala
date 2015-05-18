@@ -4,17 +4,20 @@ import java.util.concurrent.TimeUnit
 import java.util.{TimerTask, Timer, Date}
 
 import android.content.Context
+import android.gesture.GestureOverlayView.OnGesturePerformedListener
+import android.gesture.{GestureLibrary, Gesture, GestureOverlayView, GestureLibraries}
 import android.graphics.PixelFormat
 import android.os.{Handler, Bundle}
 import android.util.SparseBooleanArray
 import android.view.WindowManager.LayoutParams
 import android.view._
-import android.widget.{AbsListView, AdapterView, RelativeLayout}
+import android.widget.{Toast, AbsListView, AdapterView, RelativeLayout}
 import com.eny.smallpoll.R
 import com.eny.smallpoll.model.{Answer, Result}
 import com.eny.smallpoll.report.{Marker, MarkerRepository, ResultRepository}
 import com.eny.smallpoll.repository.{AnswerRepository, QuestionRepository}
 import org.scaloid.common._
+import scala.collection.JavaConversions._
 
 /**
  * Created by Nyavro on 13.05.15
@@ -30,21 +33,17 @@ class SurveyRunView extends SActivity with Db {
   lazy val next = new SButton
   lazy val welcome = new STextView
   lazy val thanks = new STextView
-  lazy val layout = new SVerticalLayout
-  var questionIds = Array[Long]()
-  var surveyId = -1L
-  var session = -1L
-  val restartTimer = new Timer
-  var isStart = true
+  lazy val layout = new SGestureOverlayView
   val handler = new Handler
   val preferences = new Preferences(defaultSharedPreferences)
   val EndDelay = preferences.end_screen_delay(10)
   val InactivityDelay = preferences.inactivity_screen_delay(30)
-
-  def initArguments() = {
-    surveyId = getIntent.getLongExtra("surveyId", -1L)
-    questionIds = questionRepository.list(surveyId).map(_.id.get).toArray
-  }
+  val restartTimer = new Timer
+  var questionIds = Array[Long]()
+  var surveyId = -1L
+  var session = -1L
+  var isStart = true
+  var gestureLib:GestureLibrary = _
 
   onCreate {
     initArguments()
@@ -84,6 +83,7 @@ class SurveyRunView extends SActivity with Db {
     contentView(
       layout += text += multiChoice += singleChoice += next += thanks += welcome
     )
+    enableUnlock()
   }
   def update():Unit = {
     restartTimer.cancel()
@@ -130,6 +130,29 @@ class SurveyRunView extends SActivity with Db {
       thanks.setVisibility(View.GONE)
       welcome.setVisibility(View.GONE)
     }
+  }
+  def initArguments() = {
+    surveyId = getIntent.getLongExtra("surveyId", -1L)
+    questionIds = questionRepository.list(surveyId).map(_.id.get).toArray
+  }
+  def enableUnlock() = {
+    gestureLib = GestureLibraries.fromRawResource(this, R.raw.gestures)
+    if (!gestureLib.load()) {
+      finish()
+    }
+    layout.addOnGesturePerformedListener(
+      new OnGesturePerformedListener {
+        override def onGesturePerformed(overlay: GestureOverlayView, gesture: Gesture): Unit = {
+          val predictions = gestureLib.recognize(gesture)
+          predictions.map {
+            prediction =>
+              if (prediction.score > 1.0) {
+                Toast.makeText(SurveyRunView.this, prediction.name, Toast.LENGTH_SHORT).show()
+              }
+          }
+        }
+      }
+    )
   }
   def hideSystem() = {
     new Lock(this).lock()
