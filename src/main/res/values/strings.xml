@@ -2,6 +2,7 @@
 <resources>
 	<string name="app_name">SmallPoll</string>
 	<string name="add">Добавить</string>
+    <string name="remove">Удалить</string>
     <string name="remove_survey">Удалить опрос?</string>
     <string name="dialog_ok">ОК</string>
     <string name="dialog_cancel">Отменить</string>
@@ -47,4 +48,6 @@
     <string name="send_mail_title">Отправить сообщение</string>
     <string name="default_welcome">Для начала опроса коснитесь экрана</string>
     <string name="default_thanks">Благодарим за участие в опросе</string>
+    <string name="main_menu">Настройки</string>
+    <string name="edit">Изменить</string>
 </resources>

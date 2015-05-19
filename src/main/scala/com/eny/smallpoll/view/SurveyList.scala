@@ -1,7 +1,9 @@
 package com.eny.smallpoll.view
 
 import android.content.Intent
-import android.view.View
+import android.view.ContextMenu.ContextMenuInfo
+import android.view.{MenuItem, ContextMenu, View}
+import android.widget.AdapterView.AdapterContextMenuInfo
 import android.widget.{AdapterView, ArrayAdapter}
 import com.eny.smallpoll.R
 import com.eny.smallpoll.model.Survey
@@ -54,5 +56,23 @@ class SurveyList extends SActivity with Db {
   override def onResume() = {
     super.onResume()
     update()
+  }
+  override def onCreateContextMenu(menu:ContextMenu, view:View, info:ContextMenuInfo) = {
+    super.onCreateContextMenu(menu, view, info)
+    getMenuInflater.inflate(R.menu.survey_context, menu)
+  }
+
+  override def onContextItemSelected(item:MenuItem) = {
+    val info = item.getMenuInfo.asInstanceOf[AdapterContextMenuInfo]
+    item.getItemId match {
+      case R.id.create_survey =>
+        true
+      case R.id.delete_survey =>
+        true
+      case R.id.edit_survey =>
+        true
+      case _ =>
+        super.onContextItemSelected(item)
+    }
   }
 }
