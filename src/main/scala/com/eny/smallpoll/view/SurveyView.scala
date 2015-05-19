@@ -5,30 +5,35 @@ import android.os.Bundle
 import android.view.View
 import android.widget.{AdapterView, ArrayAdapter}
 import com.eny.smallpoll.R
-import com.eny.smallpoll.model.Question
-import com.eny.smallpoll.repository.QuestionRepository
+import com.eny.smallpoll.model.{Survey, Question}
+import com.eny.smallpoll.repository.{SurveyRepository, QuestionRepository}
 import org.scaloid.common._
 
 class SurveyView extends SActivity with Db {
 
-  lazy val name = new SEditText
+  lazy val nameEdit = new SEditText
   lazy val questions = new SListView
   lazy val add = new SButton
-  lazy val start = new SButton
-  lazy val repository = new QuestionRepository(instance.getWritableDatabase)
+  lazy val saveBtn = new SButton
+  lazy val questionRepository = new QuestionRepository(instance.getReadableDatabase)
+  lazy val surveyRepository = new SurveyRepository(instance.getWritableDatabase)
   var surveyId = -1L
+  var name = ""
   def edit(question:Question) = {
     val intent = new Intent(SurveyView.this, classOf[QuestionView])
-    intent.putExtra("id", question.id.getOrElse(-1L))
+    intent.putExtra("questionId", question.id.getOrElse(-1L))
     intent.putExtra("text", question.text)
     intent.putExtra("multi", question.multi)
     intent.putExtra("survey", question.surveyId)
+    intent.putExtra("index", question.index)
     startActivity(intent)
   }
+  def save() = {
+    surveyId = surveyRepository.save(Survey(asOption(surveyId), nameEdit.text.toString))
+  }
   onCreate {
-    name.setText(getIntent.getStringExtra("name"))
-    name.setActivated(false)
-    surveyId = getIntent.getLongExtra("id", -1)
+    initParams()
+    nameEdit.setActivated(false)
     questions.onItemClick {
       (adapterView: AdapterView[_], view: View, position: Int, id: Long) =>
         edit(adapterView.getItemAtPosition(position).asInstanceOf[Question])
@@ -40,35 +45,41 @@ class SurveyView extends SActivity with Db {
     }
     add.setText(R.string.add)
     add.onClick {
-      edit(Question(None, "", multi = false, surveyId))
+      save()
+      edit(Question(None, "", multi = false, surveyId, questions.count))
     }
-    start.setText(R.string.start)
-    start.onClick {
-      val intent = new Intent(SurveyView.this, classOf[SurveyRunView])
-      intent.putExtra("surveyId", surveyId)
-      startActivity(intent)
+    saveBtn.setText(R.string.save)
+    saveBtn.onClick {
+      save()
+      finish()
     }
     contentView(
       new SVerticalLayout
         += new STextView(R.string.survey_name)
-        += name
+        += nameEdit
         += new STextView(R.string.survey_questions)
         += questions
         += add
-        += start
+        += saveBtn
     )
   }
+  def initParams() = {
+    surveyId = getIntent.getLongExtra("surveyId", -1)
+    name = getIntent.getStringExtra("name")
+  }
   def update() = {
+    nameEdit.setText(name)
+    val questions1: List[Question] = questionRepository.list(surveyId)
     questions.setAdapter(
       new ArrayAdapter[Question](
         this,
         android.R.layout.simple_list_item_1,
-        repository.list(surveyId).toArray
+        questions1.toArray
       )
     )
   }
   def remove(question:Question) = {
-    repository.remove(question.id.getOrElse(-1))
+    questionRepository.remove(question.id.getOrElse(-1))
     update()
   }
   override def onResume() {
@@ -77,9 +88,13 @@ class SurveyView extends SActivity with Db {
   }
   override def onSaveInstanceState(bundle:Bundle) = {
     super.onSaveInstanceState(bundle)
+    name = nameEdit.text.toString
     bundle.putLong("surveyId", surveyId)
+    bundle.putString("name", name)
   }
   override def onRestoreInstanceState(bundle:Bundle) = {
+    super.onRestoreInstanceState(bundle)
     surveyId = bundle.getLong("surveyId")
+    name = bundle.getString("name")
   }
 }

@@ -3,10 +3,11 @@
 	<string name="app_name">SmallPoll</string>
 	<string name="add">Добавить</string>
     <string name="remove">Удалить</string>
-    <string name="remove_survey">Удалить опрос?</string>
     <string name="dialog_ok">ОК</string>
     <string name="dialog_cancel">Отменить</string>
+    <string name="remove_survey">Удалить опрос?</string>
     <string name="remove_question">Удалить вопрос?</string>
+    <string name="remove_answer">Удалить ответ?</string>
     <string name="save">Сохранить</string>
     <string name="survey_name">Имя</string>
     <string name="survey_questions">Список вопросов</string>
@@ -54,4 +55,7 @@
     <string name="survey_view_title">Опрос</string>
     <string name="question_view_title">Вопрос</string>
     <string name="answer_view_title">Ответ</string>
+    <string name="new_survey">Новый опрос</string>
+    <string name="new_question">Новый вопрос</string>
+    <string name="new_answer">Новый ответ</string>
 </resources>

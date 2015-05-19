@@ -2,7 +2,7 @@ package com.eny.smallpoll.view
 
 import android.content.Intent
 import android.view.ContextMenu.ContextMenuInfo
-import android.view.{MenuItem, ContextMenu, View}
+import android.view.{ContextMenu, MenuItem, View}
 import android.widget.AdapterView.AdapterContextMenuInfo
 import android.widget.{AdapterView, ArrayAdapter}
 import com.eny.smallpoll.R
@@ -18,25 +18,19 @@ class SurveyList extends SActivity with Db {
 
   onCreate {
     list.onItemClick {
-      (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
+      (adapterView: AdapterView[_], view: View, position: Int, id: Long) =>
         edit(adapterView.getItemAtPosition(position).asInstanceOf[Survey])
-    }
-    list.onItemLongClick {
-      (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
-        Alert(R.string.remove_survey).run(
-          () => remove(adapterView.getItemAtPosition(position).asInstanceOf[Survey])
-        )
-        true
     }
     add.setText(R.string.add)
     add.onClick {
       edit(Survey(None, ""))
     }
     setContentView(new SVerticalLayout += list += add)
+    registerForContextMenu(list)
   }
   def edit(survey: Survey) = {
     val intent = new Intent(SurveyList.this, classOf[SurveyView])
-    intent.putExtra("id", survey.id.getOrElse(-1L))
+    intent.putExtra("surveyId", survey.id.getOrElse(-1L))
     intent.putExtra("name", survey.name)
     startActivity(intent)
   }
@@ -53,6 +47,11 @@ class SurveyList extends SActivity with Db {
     repository.remove(survey.id.getOrElse(-1))
     update()
   }
+  def run(survey:Survey) = {
+    val intent = new Intent(SurveyList.this, classOf[SurveyRunView])
+    intent.putExtra("surveyId", survey.id.getOrElse(-1L))
+    startActivity(intent)
+  }
   override def onResume() = {
     super.onResume()
     update()
@@ -61,15 +60,17 @@ class SurveyList extends SActivity with Db {
     super.onCreateContextMenu(menu, view, info)
     getMenuInflater.inflate(R.menu.survey_context, menu)
   }
-
   override def onContextItemSelected(item:MenuItem) = {
     val info = item.getMenuInfo.asInstanceOf[AdapterContextMenuInfo]
+    val survey = list.getAdapter.getItem(info.position).asInstanceOf[Survey]
     item.getItemId match {
-      case R.id.create_survey =>
+      case R.id.delete =>
+        Alert(R.string.remove_survey).run(
+          () => remove(survey)
+        )
         true
-      case R.id.delete_survey =>
-        true
-      case R.id.edit_survey =>
+      case R.id.run =>
+        run(survey)
         true
       case _ =>
         super.onContextItemSelected(item)

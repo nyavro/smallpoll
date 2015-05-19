@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="wrap_content" android:layout_width="wrap_content">
-    <item android:id="@+id/create_survey"
-          android:title="@string/add"
-          android:showAsAction="ifRoom"/>
-    <item android:id="@+id/delete_survey"
-          android:title="@string/remove"
-          android:showAsAction="ifRoom"/>
-    <item android:id="@+id/edit_survey"
-          android:title="@string/edit"
-          android:showAsAction="ifRoom"/>
-    <item android:id="@+id/run_survey"
+    <item android:id="@+id/run"
           android:title="@string/start"
+          android:showAsAction="ifRoom"/>
+    <item android:id="@+id/delete"
+          android:title="@string/remove"
           android:showAsAction="ifRoom"/>
 </menu>

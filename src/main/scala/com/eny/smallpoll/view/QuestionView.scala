@@ -6,8 +6,8 @@ import android.util.Log
 import android.view.View
 import android.widget.{AdapterView, ArrayAdapter}
 import com.eny.smallpoll.R
-import com.eny.smallpoll.model.{Question, Answer}
-import com.eny.smallpoll.repository.{QuestionRepository, AnswerRepository}
+import com.eny.smallpoll.model.{Answer, Question}
+import com.eny.smallpoll.repository.{AnswerRepository, QuestionRepository}
 import org.scaloid.common._
 
 class QuestionView extends SActivity with Db {
@@ -16,17 +16,18 @@ class QuestionView extends SActivity with Db {
   lazy val answers = new SListView
   lazy val multi = new SCheckBox
   lazy val add = new SButton
-  lazy val save = new SButton
-  lazy val repository = new AnswerRepository(instance.getWritableDatabase)
+  lazy val saveBtn = new SButton
+  lazy val answerRepository = new AnswerRepository(instance.getReadableDatabase)
   lazy val questionRepository = new QuestionRepository(instance.getWritableDatabase)
-  var id:Long = -1
-  var survey:Long = -1
+  var questionId:Long = -1
+  var surveyId:Long = -1
+  var isMulti:Boolean = false
+  var index:Int = -1
+  var questionText:String = ""
+
   onCreate {
-    text.setText(getIntent.getStringExtra("text"))
+    initParams()
     text.setActivated(false)
-    id = getIntent.getLongExtra("id", -1)
-    survey = getIntent.getLongExtra("survey", -1)
-    multi.setChecked(getIntent.getBooleanExtra("multi", false))
     multi.setText(R.string.multi_select)
     answers.onItemClick {
       (adapterView: AdapterView[_], view: View, position: Int, id: Long) =>
@@ -34,19 +35,27 @@ class QuestionView extends SActivity with Db {
     }
     answers.onItemLongClick {
       (adapterView:AdapterView[_], view:View, position:Int, id:Long) =>
-        Alert(R.string.remove_question).run(() => remove(adapterView.getItemAtPosition(position).asInstanceOf[Answer]))
+        Alert(R.string.remove_answer).run(() => remove(adapterView.getItemAtPosition(position).asInstanceOf[Answer]))
         true
     }
     add.setText(R.string.add)
     add.onClick {
-      edit(Answer(None, "", answers.getAdapter.getCount, id))
+      save()
+      edit(Answer(None, "", answers.getAdapter.getCount, questionId))
     }
-    save.setText(R.string.save)
-    save.onClick {
-      questionRepository.save(Question(asOption(id), text.getText.toString, multi.isChecked, survey))
+    saveBtn.setText(R.string.save)
+    saveBtn.onClick {
+      save()
       finish()
     }
-    contentView(new SVerticalLayout += new STextView(R.string.question_text) += text += new STextView(R.string.question_answers) += answers += multi += add += save)
+    contentView(new SVerticalLayout += new STextView(R.string.question_text) += text += new STextView(R.string.question_answers) += multi += answers += add += saveBtn)
+  }
+  def initParams() = {
+    questionId = getIntent.getLongExtra("questionId", -1)
+    surveyId = getIntent.getLongExtra("survey", -1)
+    isMulti = getIntent.getBooleanExtra("multi", false)
+    questionText = getIntent.getStringExtra("text")
+    index = getIntent.getIntExtra("index", -1)
   }
   def edit(answer:Answer): Unit = {
     val intent = new Intent(QuestionView.this, classOf[AnswerView])
@@ -57,16 +66,22 @@ class QuestionView extends SActivity with Db {
     startActivity(intent)
   }
   def remove(answer:Answer): Unit = {
-    repository.remove(answer.id.getOrElse(-1L))
+    answerRepository.remove(answer.id.getOrElse(-1L))
     update()
   }
+  def save() = {
+    questionId = questionRepository.save(Question(asOption(questionId), text.getText.toString, multi.isChecked, surveyId, index))
+    questionId
+  }
   def update() = {
-    Log.d("smallpoll", s"Updating question $id")
+    Log.d("smallpoll", s"Updating question $questionId")
+    multi.setChecked(isMulti)
+    text.setText(questionText)
     answers.setAdapter(
       new ArrayAdapter[Answer](
         this,
         android.R.layout.simple_list_item_1,
-        repository.list(id).toArray
+        answerRepository.list(questionId).toArray
       )
     )
   }
@@ -74,13 +89,23 @@ class QuestionView extends SActivity with Db {
     super.onResume()
     update()
   }
+  override def onPause(): Unit = {
+    super.onPause()
+  }
   override def onSaveInstanceState(bundle:Bundle) = {
     super.onSaveInstanceState(bundle)
-    bundle.putLong("id", id)
-    bundle.putLong("survey", survey)
+    questionText = text.text.toString
+    isMulti = multi.isChecked
+    bundle.putLong("questionId", questionId)
+    bundle.putLong("survey", surveyId)
+    bundle.putBoolean("isMulti", isMulti)
+    bundle.putString("questionText", questionText)
   }
   override def onRestoreInstanceState(bundle:Bundle) = {
-    id = bundle.getLong("id")
-    survey = bundle.getLong("survey")
+    super.onRestoreInstanceState(bundle)
+    questionId = bundle.getLong("questionId")
+    surveyId = bundle.getLong("survey")
+    isMulti = bundle.getBoolean("isMulti")
+    questionText = bundle.getString("questionText")
   }
 }
