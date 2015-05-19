@@ -50,4 +50,8 @@
     <string name="default_thanks">Благодарим за участие в опросе</string>
     <string name="main_menu">Настройки</string>
     <string name="edit">Изменить</string>
+    <string name="survey_list_title">Список опросов</string>
+    <string name="survey_view_title">Опрос</string>
+    <string name="question_view_title">Вопрос</string>
+    <string name="answer_view_title">Ответ</string>
 </resources>
