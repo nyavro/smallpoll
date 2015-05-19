@@ -14,14 +14,14 @@
             android:summary="@string/thanks_summary"
             android:dialogTitle="@string/edit_thanks"
         />
-        <EditTextPreference
+        <com.eny.smallpoll.view.components.EditIntPreference
             android:key="end_screen_delay"
             android:title="@string/end_screen_delay"
             android:summary="@string/end_screen_delay_summary"
             android:dialogTitle="@string/edit_end_screen_delay"
             android:inputType="number"
         />
-        <EditTextPreference
+        <com.eny.smallpoll.view.components.EditIntPreference
             android:key="inactivity_screen_delay"
             android:title="@string/restart_delay"
             android:summary="@string/restart_delay_summary"
