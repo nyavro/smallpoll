@@ -32,17 +32,17 @@ class Report(markers:MarkerRepository, results:ResultRepository, answers:AnswerR
   def result2(from:Date, to:Date): List[SurveyReport] = {
     results
       .fullReport(from, to)
-      .groupBy(item => (item._1,item._2))
+      .groupBy(item => (item.surveyId, item.name))
       .map {
-        case ((id, name), qs) =>
+        case ((id,name), qs) =>
           SurveyReport(from, to, name, markers.count(from, to, id),
             qs
-              .groupBy(_._3)
+              .groupBy(_.question)
               .map {
                 case (questionTxt, answerList) => QuestionReport(questionTxt,
                     answerList
                       .map {
-                        case (_, _, q, a, c) => AnswerReport(a, c)
+                        case item => AnswerReport(item.answer, item.count)
                       }
                   )
               }

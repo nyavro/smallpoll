@@ -9,7 +9,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.{DatePicker, TimePicker}
 import com.eny.smallpoll.R
-import com.eny.smallpoll.report.{TableReport, MarkerRepository, Report, ResultRepository}
+import com.eny.smallpoll.report.{MarkerRepository, Report, ResultRepository, TableReport}
 import com.eny.smallpoll.repository.{AnswerRepository, QuestionRepository, SurveyRepository}
 import org.scaloid.common._
 
@@ -92,15 +92,16 @@ class ReportSendView extends SActivity with Db {
       new DatePickerFragment(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), setTo).show(getFragmentManager, "datePicker")
     }
     send.onClick {
-      val list = new Report(markerRepo, resultRepo, answerRepo, questionRepo, surveyRepo).result(from, to)
+      val list = new Report(markerRepo, resultRepo, answerRepo, questionRepo, surveyRepo).result2(from, to)
       val fromStr = fullFormat.get.format(from)
       val toStr = fullFormat.get.format(to)
       val body =
         s"""
+           |<!DOCTYPE html>
            |<html>
            |  <body>
-           |    <div>Опросов за период с $fromStr по $toStr: ${list.size}</div>
-           |    ${new TableReport(list).toString}
+           |    <div>Опросов за период: ${list.size}</div>
+           |    ${new TableReport(list, fromStr, toStr).toString}
            |  </body>
            |</html>
            |
@@ -124,7 +125,7 @@ class ReportSendView extends SActivity with Db {
   def sendMail(subject:String, body:String) = {
     val preferences = new Preferences(defaultSharedPreferences)
     val intent = new Intent(Intent.ACTION_SEND)
-    intent.setType("message/rfc822")
+    intent.setType("text/html")
     intent.putExtra(Intent.EXTRA_EMAIL, Array(preferences.sendto("")))
     intent.putExtra(Intent.EXTRA_SUBJECT, subject)
     intent.putExtra(Intent.EXTRA_TEXT, body)

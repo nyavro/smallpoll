@@ -10,6 +10,7 @@ import com.eny.smallpoll.repository.{CursorConversion, Values}
 /**
  * Created by Nyavro on 13.05.15
  */
+case class Full(surveyId:Long, name:String, question:String, answer:String, count:Int)
 class ResultRepository(db: SQLiteDatabase) extends CursorConversion {
 
   val Table = "result"
@@ -27,7 +28,7 @@ class ResultRepository(db: SQLiteDatabase) extends CursorConversion {
   def save(result:Result) = {
     db.insert(Table, null, Values(Map(DateField->result.date, AnswerIdField->result.answerId)).content)
   }
-  def fullReport(from: Date, to: Date):List[(Long, String, String, String, Int)] = {
+  def fullReport(from: Date, to: Date):List[Full] = {
     val cursor = db.rawQuery(
       s"""
          |SELECT s._id, s.name, q.txt, a.txt, COUNT($AnswerIdField)
@@ -40,7 +41,7 @@ class ResultRepository(db: SQLiteDatabase) extends CursorConversion {
       Array(from.getTime.toString, to.getTime.toString)
     )
     cursor.moveToFirst
-    toList(cursor, cursor => (cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getInt(4)))
+    toList(cursor, cursor => Full(cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getInt(4)))
   }
   def convert(cursor:Cursor) = cursor.getLong(0) -> cursor.getInt(1)
 }

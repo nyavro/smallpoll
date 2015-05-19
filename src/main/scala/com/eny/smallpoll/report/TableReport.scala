@@ -3,7 +3,7 @@ package com.eny.smallpoll.report
 /**
  * Created by Nyavro on 15.05.15
  */
-class TableReport(reports:List[SurveyReport]) {
+class TableReport(reports:List[SurveyReport], fromStr:String, toStr:String) {
   override def toString = {
     val Separator: String = "\r\n"
     reports.map {
@@ -12,36 +12,31 @@ class TableReport(reports:List[SurveyReport]) {
           question =>
             val answers = question.answerReports.map {
               answer =>
-                s"""
-                   |<tr>
-                   |  <tc>${answer.answer}</tc>
-                   |  <tc>${answer.count}</tc>
+                s"""<tr>
+                   |  <td>${answer.answer}</td>
+                   |  <td>${answer.count}</td>
                    |</tr>
                 """.stripMargin
             }.mkString(Separator)
-            s"""
-               |<tr>
-               |  <tc>${question.question}</tc>
-               |  <tc/>
+            s"""<tr>
+               |  <td>${question.question}</td>
+               |  <td/>
                |</tr>
-               |$answers
-            """.stripMargin
+               |$answers""".stripMargin
         }.mkString(Separator)
-        s"""
-           |<table>
+        s"""<table>
            |  <caption>${report.name}</caption>
            |  <tr>
-           |    <tc>Период</tc>
-           |    <tc>${report.from}-${report.to}</tc>
+           |    <td>Период</td>
+           |    <td>$fromStr-$toStr</td>
            |  </tr>
            |  <tr>
-           |    <tc>Количество опрошенных</tc>
-           |    <tc>${report.asked}</tc>
+           |    <td>Количество опрошенных</td>
+           |    <td>${report.asked}</td>
            |  </tr>
            |  <tr/>
            |  $questions
-           |</table>
-         """.stripMargin
+           |</table>""".stripMargin
     }.mkString(Separator)
   }
 }
