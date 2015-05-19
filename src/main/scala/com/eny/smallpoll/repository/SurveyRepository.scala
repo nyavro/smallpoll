@@ -27,11 +27,12 @@ class SurveyRepository(db:SQLiteDatabase) extends CursorConversion {
     toList(cursor, convert)
   }
 
-  def save(survey: Survey): Unit = {
+  def save(survey: Survey): Long = {
     val values = Values(Map("name"->survey.name)).content
     survey.id match {
       case Some(id) =>
         db.update(Table, values, "_id=?", Array(id.toString))
+        id
       case None =>
         db.insert(Table, null, values)
     }

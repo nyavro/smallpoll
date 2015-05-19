@@ -9,11 +9,14 @@ import com.eny.smallpoll.model.Answer
  */
 class AnswerRepository(db:SQLiteDatabase) extends CursorConversion {
 
-  def save(answer: Answer):Unit = {
+  def save(answer: Answer):Long = {
     val content = Values(Map("txt" -> answer.text, "indx" -> answer.index, "question_id" -> answer.questionId)).content
     answer.id match {
-      case Some(id) => db.update("answer", content, "_id=?", Array(id.toString))
-      case None => db.insert("answer", null, content)
+      case Some(id) =>
+        db.update("answer", content, "_id=?", Array(id.toString))
+        id
+      case None =>
+        db.insert("answer", null, content)
     }
   }
 
