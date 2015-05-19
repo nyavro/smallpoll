@@ -68,13 +68,10 @@ class SurveyRunView extends SActivity with Db {
         update()
     }
     multiChoice.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE)
-    thanks.setText(preferences.thanks(R.string.default_thanks))
-    welcome.setText(preferences.welcome(R.string.default_welcome))
+    thanks.setText(preferences.thanks(getString(R.string.default_thanks)))
+    welcome.setText(preferences.welcome(getString(R.string.default_welcome)))
     layout.onClick {
       if (questionIds.isEmpty) {
-        if(isStart) {
-
-        }
         initArguments()
         update()
       }
@@ -184,7 +181,8 @@ class SurveyRunView extends SActivity with Db {
           handler.post(
             new Runnable() {
               override def run(): Unit = {
-                initArguments()
+                questionIds = Array()
+                isStart = true
                 update()
               }
             }
