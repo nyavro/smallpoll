@@ -10,7 +10,7 @@ import com.eny.smallpoll.model.Survey
 import com.eny.smallpoll.repository.SurveyRepository
 import org.scaloid.common._
 
-class SurveyList extends SActivity with Db {
+class SurveyListView extends SActivity with Db {
 
   lazy val list = new SListView()
   lazy val add = new SButton()
@@ -29,7 +29,7 @@ class SurveyList extends SActivity with Db {
     registerForContextMenu(list)
   }
   def edit(survey: Survey) = {
-    val intent = new Intent(SurveyList.this, classOf[SurveyView])
+    val intent = new Intent(SurveyListView.this, classOf[SurveyView])
     intent.putExtra("surveyId", survey.id.getOrElse(-1L))
     intent.putExtra("name", survey.name)
     startActivity(intent)
@@ -48,7 +48,7 @@ class SurveyList extends SActivity with Db {
     update()
   }
   def run(survey:Survey) = {
-    val intent = new Intent(SurveyList.this, classOf[SurveyRunView])
+    val intent = new Intent(SurveyListView.this, classOf[SurveyRunView])
     intent.putExtra("surveyId", survey.id.getOrElse(-1L))
     startActivity(intent)
   }

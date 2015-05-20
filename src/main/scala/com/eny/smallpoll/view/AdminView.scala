@@ -14,7 +14,7 @@ class AdminView extends SActivity with Db {
     surveys.setText(R.string.surveys)
     report.setText(R.string.report)
     surveys.onClick {
-      new Intent().start[SurveyList]
+      new Intent().start[SurveyListView]
     }
     report.onClick {
       new Intent().start[ReportSendView]
