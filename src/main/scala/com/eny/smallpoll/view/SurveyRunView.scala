@@ -82,7 +82,7 @@ class SurveyRunView extends SActivity with Db {
     contentView(
       layout += linearLayout
     )
-    enableUnlock()
+//    enableUnlock()
   }
   def update():Unit = {
     restartTimer.cancel()
@@ -155,7 +155,7 @@ class SurveyRunView extends SActivity with Db {
     )
   }
   def hideSystem() = {
-    new Lock(this).lock()
+//    new Lock(this).lock()
     getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN)
     getActionBar.hide()
     val params = new LayoutParams(
