@@ -113,11 +113,21 @@ class SurveyRunView extends SActivity with Db {
         text.setVisibility(View.GONE)
         markerRepository.save(Marker(session, new Date, start = false, surveyId))
         isStart = true
-        scheduleRestart2(EndDelay)
+        scheduleRestart(
+        EndDelay, {
+          update()
+        }
+        )
       }
     }
     else {
-      scheduleRestart(InactivityDelay)
+      scheduleRestart(
+      InactivityDelay, {
+        questionIds = Array();
+        isStart = true
+        update()
+      }
+      )
       val question = questionRepository.load(questionIds.head)
       val answers = answerRepository.list(question.id.get)
       text.setText(question.text)
@@ -183,33 +193,13 @@ class SurveyRunView extends SActivity with Db {
         params
       )
   }
-  def scheduleRestart(delay: Int) = {
+  def scheduleRestart(delay: Int, code: => Unit) = {
     restartTimer.schedule(
       new TimerTask {
         override def run(): Unit = {
           handler.post(
             new Runnable() {
-              override def run(): Unit = {
-                questionIds = Array()
-                isStart = true
-                update()
-              }
-            }
-          )
-        }
-      },
-      new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(delay))
-    )
-  }
-  def scheduleRestart2(delay: Int) = {
-    restartTimer.schedule(
-      new TimerTask {
-        override def run(): Unit = {
-          handler.post(
-            new Runnable() {
-              override def run(): Unit = {
-                update()
-              }
+              override def run(): Unit = code
             }
           )
         }
