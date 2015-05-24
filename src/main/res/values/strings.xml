@@ -72,4 +72,7 @@
     <string name="question_text_size">Размер шрифта вопроса</string>
     <string name="question_text_size_summary">Размер шрифта вопроса</string>
     <string name="question_text_size_edit">Укажите размер шрифта вопроса</string>
+    <string name="admin_view_title">Администрирование</string>
+    <string name="preferences_view_title">Настройки</string>
+    <string name="report_send_view_title">Настройки</string>
 </resources>

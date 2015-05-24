@@ -11,14 +11,14 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-        <activity android:name="com.eny.smallpoll.view.AdminView"       android:label="AdminView"/>
+        <activity android:name="com.eny.smallpoll.view.AdminView"       android:label="@string/admin_view_title"/>
         <activity android:name="com.eny.smallpoll.view.SurveyListView"      android:label="@string/survey_list_title"/>
 		<activity android:name="com.eny.smallpoll.view.SurveyView"		android:label="@string/survey_view_title" android:windowSoftInputMode="stateHidden"/>
 		<activity android:name="com.eny.smallpoll.view.QuestionView"	android:label="@string/question_view_title" android:windowSoftInputMode="stateHidden"/>
 		<activity android:name="com.eny.smallpoll.view.AnswerView"		android:label="@string/answer_view_title" android:windowSoftInputMode="stateHidden"/>
 		<activity android:name="com.eny.smallpoll.view.SurveyRunView"	android:label="SurveyRunView"/>
-		<activity android:name="com.eny.smallpoll.view.PreferencesView"	android:label="PreferencesView"/>
-		<activity android:name="com.eny.smallpoll.view.ReportSendView"	android:label="ReportSendView"/>
+		<activity android:name="com.eny.smallpoll.view.PreferencesView"	android:label="@string/preferences_view_title"/>
+		<activity android:name="com.eny.smallpoll.view.ReportSendView"	android:label="@string/report_send_view_title"/>
 	</application>
 	<uses-sdk android:minSdkVersion="16" />
 	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
