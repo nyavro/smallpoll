@@ -122,12 +122,12 @@ class SurveyRunView extends SActivity with Db {
       val answers = answerRepository.list(question.id.get)
       text.setText(question.text)
       if(question.multi) {
-        multiChoice.setAdapter(new SArrayAdapter(answers.toArray, android.R.layout.simple_list_item_multiple_choice))
+        multiChoice.setAdapter(new SArrayAdapter(answers.toArray, R.layout.custom_multichoice_layout))
         multiChoice.setVisibility(View.VISIBLE)
         singleChoice.setVisibility(View.GONE)
         next.setVisibility(View.VISIBLE)
       } else {
-        singleChoice.setAdapter(new SArrayAdapter(answers.toArray))
+        singleChoice.setAdapter(new SArrayAdapter(answers.toArray, R.layout.custom_singlechoice_layout))
         multiChoice.setVisibility(View.GONE)
         singleChoice.setVisibility(View.VISIBLE)
         next.setVisibility(View.GONE)
