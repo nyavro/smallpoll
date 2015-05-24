@@ -1,8 +1,8 @@
 // Using Android Plugin
-                                                              android.Plugin.androidBuild
+android.Plugin.androidBuild
 
 // Specifying the Android target Sdk version
-platformTarget in Android := "android-22"
+platformTarget in Android := "android-16"
 
 // Application Name
 name := """small-poll"""
