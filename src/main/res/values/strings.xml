@@ -47,8 +47,8 @@
     <string name="edit_password">Введите пароль для входа в приложение</string>
     <string name="password_error">Введён неверный пароль. Попробуйте ещё раз!</string>
     <string name="send_mail_title">Отправить сообщение</string>
-    <string name="default_welcome">Для начала опроса коснитесь экрана</string>
-    <string name="default_thanks">Благодарим за участие в опросе</string>
+    <string name="welcome_default">Для начала опроса коснитесь экрана</string>
+    <string name="thanks_default">Спасибо за Ваш отзыв, это позволит нам улучшить качество нашей работы</string>
     <string name="main_menu">Настройки</string>
     <string name="edit">Изменить</string>
     <string name="survey_list_title">Список опросов</string>
@@ -58,4 +58,18 @@
     <string name="new_survey">Новый опрос</string>
     <string name="new_question">Новый вопрос</string>
     <string name="new_answer">Новый ответ</string>
+    <string name="end_screen_delay_default">10</string>
+    <string name="restart_delay_default">30</string>
+    <string name="splash_text_size_default">30</string>
+    <string name="question_text_size_default">30</string>
+    <string name="gesture_threshold_default">3</string>
+    <string name="gesture_threshold">Строгость жестов разблокировки</string>
+    <string name="gesture_threshold_summary">Чем выше, тем точнее должен быть жест разблокировки</string>
+    <string name="gesture_threshold_edit">Укажите строгость жеста разблокировки</string>
+    <string name="splash_text_size">Размер шрифта заставок</string>
+    <string name="splash_text_size_summary">Размер шрифта на экране приветствия/благодарности</string>
+    <string name="splash_text_size_edit">Укажите размер шрифта приветствия/благодарности</string>
+    <string name="question_text_size">Размер шрифта вопроса</string>
+    <string name="question_text_size_summary">Размер шрифта вопроса</string>
+    <string name="question_text_size_edit">Укажите размер шрифта вопроса</string>
 </resources>

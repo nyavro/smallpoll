@@ -23,7 +23,6 @@ import scala.collection.JavaConversions._
  * Created by Nyavro on 13.05.15
  */
 class SurveyRunView extends SActivity with Db {
-  val UnlockGestureThreshold = 3.0
   lazy val questionRepository = new QuestionRepository(instance.getReadableDatabase)
   lazy val answerRepository = new AnswerRepository(instance.getReadableDatabase)
   lazy val resultRepository = new ResultRepository(instance.getWritableDatabase)
@@ -36,8 +35,9 @@ class SurveyRunView extends SActivity with Db {
   lazy val thanks = new STextView
   lazy val layout = new SGestureOverlayView
   lazy val preferences = new Preferences(defaultSharedPreferences)
-  lazy val EndDelay = preferences.end_screen_delay(10)
-  lazy val InactivityDelay = preferences.inactivity_screen_delay(30)
+  lazy val EndDelay = preferences.end_screen_delay(getString(R.string.end_screen_delay_default).toInt)
+  lazy val InactivityDelay = preferences.inactivity_screen_delay(getString(R.string.restart_delay_default).toInt)
+  lazy val UnlockGestureThreshold = preferences.gesture_threshold(getString(R.string.gesture_threshold_default).toInt)
   lazy val lock: Lock = new Lock(this)
   val handler = new Handler
   var restartTimer = new Timer
@@ -59,27 +59,31 @@ class SurveyRunView extends SActivity with Db {
       selectedIds(0, multiChoice.getCheckedItemPositions).map {
         answerId => resultRepository.save(Result(new Date, answerId))
       }
-      questionIds = questionIds.tail
+      questionIds = if(questionIds.isEmpty) Array() else questionIds.tail
       update()
     }
     singleChoice.onItemClick {
       (adapterView: AdapterView[_], view: View, position: Int, id: Long) =>
         val answerId = singleChoice.getAdapter.getItem(position).asInstanceOf[Answer].id.getOrElse(-1L)
         resultRepository.save(Result(new Date, answerId))
-        questionIds = questionIds.tail
+        questionIds = if(questionIds.isEmpty) Array() else questionIds.tail
         update()
     }
     multiChoice.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE)
-    thanks.setText(preferences.thanks(getString(R.string.default_thanks)))
-    welcome.setText(preferences.welcome(getString(R.string.default_welcome)))
+    val splashTextSize = preferences.splash_text_size(getString(R.string.splash_text_size_default).toInt)
+    thanks.setText(preferences.thanks(getString(R.string.thanks_default)))
+    thanks.setTextSize(splashTextSize)
+    welcome.setText(preferences.welcome(getString(R.string.welcome_default)))
+    welcome.setTextSize(splashTextSize)
     layout.onClick {
-      if (questionIds.isEmpty) {
+      if (questionIds.isEmpty && !isStart) {
         initArguments()
         update()
       }
     }
     val linearLayout = new SLinearLayout()
     linearLayout.setOrientation(linearLayout.VERTICAL)
+    text.setTextSize(preferences.question_text_size(getString(R.string.question_text_size_default).toInt).toFloat)
     linearLayout += text += multiChoice += singleChoice += next += thanks += welcome
     contentView(
       layout += linearLayout

@@ -7,12 +7,14 @@
             android:title="@string/welcome"
             android:summary="@string/welcome_summary"
             android:dialogTitle="@string/edit_welcome"
+            android:defaultValue="@string/welcome_default"
         />
         <EditTextPreference
             android:key="thanks"
             android:title="@string/thanks"
             android:summary="@string/thanks_summary"
             android:dialogTitle="@string/edit_thanks"
+            android:defaultValue="@string/thanks_default"
         />
         <com.eny.smallpoll.view.components.EditIntPreference
             android:key="end_screen_delay"
@@ -20,6 +22,7 @@
             android:summary="@string/end_screen_delay_summary"
             android:dialogTitle="@string/edit_end_screen_delay"
             android:inputType="number"
+            android:defaultValue="@string/end_screen_delay_default"
         />
         <com.eny.smallpoll.view.components.EditIntPreference
             android:key="inactivity_screen_delay"
@@ -27,6 +30,31 @@
             android:summary="@string/restart_delay_summary"
             android:dialogTitle="@string/edit_restart_delay"
             android:inputType="number"
+            android:defaultValue="@string/restart_delay_default"
+        />
+        <com.eny.smallpoll.view.components.EditIntPreference
+            android:key="splash_text_size"
+            android:title="@string/splash_text_size"
+            android:summary="@string/splash_text_size_summary"
+            android:dialogTitle="@string/splash_text_size_edit"
+            android:inputType="number"
+            android:defaultValue="@string/splash_text_size_default"
+            />
+        <com.eny.smallpoll.view.components.EditIntPreference
+            android:key="question_text_size"
+            android:title="@string/question_text_size"
+            android:summary="@string/question_text_size_summary"
+            android:dialogTitle="@string/question_text_size_edit"
+            android:inputType="number"
+            android:defaultValue="@string/question_text_size_default"
+            />
+        <com.eny.smallpoll.view.components.EditIntPreference
+            android:key="gesture_threshold"
+            android:title="@string/gesture_threshold"
+            android:summary="@string/gesture_threshold_summary"
+            android:dialogTitle="@string/gesture_threshold_edit"
+            android:inputType="number"
+            android:defaultValue="@string/gesture_threshold_default"
         />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/report_options">
