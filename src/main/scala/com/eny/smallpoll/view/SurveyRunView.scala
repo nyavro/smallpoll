@@ -7,7 +7,7 @@ import android.content.Context
 import android.gesture.GestureOverlayView.OnGesturePerformedListener
 import android.gesture.{GestureLibrary, Gesture, GestureOverlayView, GestureLibraries}
 import android.graphics.PixelFormat
-import android.os.{Handler, Bundle}
+import android.os.{Build, Handler, Bundle}
 import android.util.SparseBooleanArray
 import android.view.WindowManager.LayoutParams
 import android.view._
@@ -23,6 +23,7 @@ import scala.collection.JavaConversions._
  * Created by Nyavro on 13.05.15
  */
 class SurveyRunView extends SActivity with Db {
+  val UnlockGestureThreshold = 3.0
   lazy val questionRepository = new QuestionRepository(instance.getReadableDatabase)
   lazy val answerRepository = new AnswerRepository(instance.getReadableDatabase)
   lazy val resultRepository = new ResultRepository(instance.getWritableDatabase)
@@ -34,10 +35,11 @@ class SurveyRunView extends SActivity with Db {
   lazy val welcome = new STextView
   lazy val thanks = new STextView
   lazy val layout = new SGestureOverlayView
-  val handler = new Handler
   lazy val preferences = new Preferences(defaultSharedPreferences)
   lazy val EndDelay = preferences.end_screen_delay(10)
   lazy val InactivityDelay = preferences.inactivity_screen_delay(30)
+  lazy val lock: Lock = new Lock(this)
+  val handler = new Handler
   var restartTimer = new Timer
   var questionIds = Array[Long]()
   var surveyId = -1L
@@ -82,7 +84,7 @@ class SurveyRunView extends SActivity with Db {
     contentView(
       layout += linearLayout
     )
-//    enableUnlock()
+    enableUnlock()
   }
   def update():Unit = {
     restartTimer.cancel()
@@ -145,7 +147,8 @@ class SurveyRunView extends SActivity with Db {
         override def onGesturePerformed(overlay: GestureOverlayView, gesture: Gesture): Unit = {
           gestureLib.recognize(gesture).map {
             prediction =>
-              if (prediction.score > 3.0) {
+              if (prediction.score > UnlockGestureThreshold) {
+                lock.release()
                 Toast.makeText(SurveyRunView.this, prediction.name + s" score:${prediction.score}", Toast.LENGTH_SHORT).show()
                 finish()
               }
@@ -155,7 +158,9 @@ class SurveyRunView extends SActivity with Db {
     )
   }
   def hideSystem() = {
-//    new Lock(this).lock()
+    if(Build.VERSION.SDK_INT>Build.VERSION_CODES.JELLY_BEAN) {
+      lock.lock()
+    }
     getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN)
     getActionBar.hide()
     val params = new LayoutParams(
