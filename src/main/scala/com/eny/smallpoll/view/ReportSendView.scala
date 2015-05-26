@@ -37,11 +37,6 @@ class ReportSendView extends SActivity with Db {
     local.set(new SimpleDateFormat("HH:mm:ss"))
     local
   }
-  lazy val fullFormat = {
-    val local = new ThreadLocal[DateFormat]
-    local.set(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss"))
-    local
-  }
   var from:Date = _
   var to:Date = _
 
@@ -93,8 +88,8 @@ class ReportSendView extends SActivity with Db {
     }
     send.onClick {
       val list = new Report(markerRepo, resultRepo, answerRepo, questionRepo, surveyRepo).result2(from, to)
-      val fromStr = fullFormat.get.format(from)
-      val toStr = fullFormat.get.format(to)
+      val fromStr = format(from)
+      val toStr = format(to)
       val body =
         s"""
            |<!DOCTYPE html>
@@ -110,6 +105,14 @@ class ReportSendView extends SActivity with Db {
       finish()
     }
     contentView(new SVerticalLayout += fromText += fromDate += fromTime += toText += toDate += toTime += send)
+  }
+  def format(date:Date):String = {
+    val calendar = Calendar.getInstance()
+    calendar.setTime(date)
+    if(calendar.get(Calendar.HOUR)!=0 || calendar.get(Calendar.MINUTE)!=0 || calendar.get(Calendar.SECOND)!=0)
+      dateFormat.get().format(date) + " " + timeFormat.get().format(date)
+    else
+      dateFormat.get().format(date)
   }
   override def onResume() = {
     super.onResume()
