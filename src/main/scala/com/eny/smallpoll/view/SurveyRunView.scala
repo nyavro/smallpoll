@@ -4,11 +4,13 @@ import java.util.concurrent.TimeUnit
 import java.util.{TimerTask, Timer, Date}
 
 import android.content.Context
+import android.content.res.Resources
 import android.gesture.GestureOverlayView.OnGesturePerformedListener
 import android.gesture.{GestureLibrary, Gesture, GestureOverlayView, GestureLibraries}
-import android.graphics.PixelFormat
+import android.graphics.{Color, Bitmap, BitmapFactory, PixelFormat}
+import android.graphics.drawable.Drawable
 import android.os.{Build, Handler, Bundle}
-import android.util.SparseBooleanArray
+import android.util.{DisplayMetrics, SparseBooleanArray}
 import android.view.WindowManager.LayoutParams
 import android.view._
 import android.widget.{Toast, AbsListView, AdapterView, RelativeLayout}
@@ -30,7 +32,7 @@ class SurveyRunView extends SActivity with Db {
   lazy val text = new STextView
   lazy val multiChoice = new SListView
   lazy val singleChoice = new SListView
-  lazy val next = new SButton
+  lazy val next = new SButton(getString(R.string.next))
   lazy val welcome = new STextView
   lazy val thanks = new STextView
   lazy val layout = new SGestureOverlayView
@@ -49,7 +51,6 @@ class SurveyRunView extends SActivity with Db {
 
   onCreate {
     hideSystem()
-    next.setText(R.string.next)
     next.onClick {
       def selectedIds(i: Int, ids: SparseBooleanArray): List[Long] =
         if (i < ids.size)
@@ -59,34 +60,59 @@ class SurveyRunView extends SActivity with Db {
       selectedIds(0, multiChoice.getCheckedItemPositions).map {
         answerId => resultRepository.save(Result(new Date, answerId))
       }
-      questionIds = if(questionIds.isEmpty) Array() else questionIds.tail
+      questionIds = if (questionIds.isEmpty) Array() else questionIds.tail
       update()
     }
     singleChoice.onItemClick {
       (adapterView: AdapterView[_], view: View, position: Int, id: Long) =>
         val answerId = singleChoice.getAdapter.getItem(position).asInstanceOf[Answer].id.getOrElse(-1L)
         resultRepository.save(Result(new Date, answerId))
-        questionIds = if(questionIds.isEmpty) Array() else questionIds.tail
+        questionIds = if (questionIds.isEmpty) Array() else questionIds.tail
         update()
     }
     multiChoice.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE)
     val splashTextSize = preferences.splash_text_size(getString(R.string.splash_text_size_default).toInt)
     thanks.setText(preferences.thanks(getString(R.string.thanks_default)))
     thanks.setTextSize(splashTextSize)
+    thanks.gravity(Gravity.CENTER)
+    thanks.setTextColor(Color.BLUE)
     welcome.setText(preferences.welcome(getString(R.string.welcome_default)))
     welcome.setTextSize(splashTextSize)
+    welcome.gravity(Gravity.CENTER)
+    welcome.setTextColor(Color.BLUE)
+    text.setTextSize(preferences.question_text_size(getString(R.string.question_text_size_default).toInt).toFloat)
+    text.gravity(Gravity.CENTER)
+    text.setTextColor(Color.BLUE)
     layout.onClick {
       if (questionIds.isEmpty && !isStart) {
         initArguments()
         update()
       }
     }
-    val linearLayout = new SLinearLayout()
-    linearLayout.setOrientation(linearLayout.VERTICAL)
-    text.setTextSize(preferences.question_text_size(getString(R.string.question_text_size_default).toInt).toFloat)
-    linearLayout += text += multiChoice += singleChoice += next += thanks += welcome
+    val topArea = new SRelativeLayout {
+      text.<<.centerInParent.>>
+    } += text
+    val bottomArea = new SRelativeLayout {
+      next.<<.centerInParent.>>
+    } += next
+    val centerArea = new SRelativeLayout {
+      multiChoice.<<.centerInParent.>>
+      singleChoice.<<.centerInParent.>>
+    } += multiChoice += singleChoice
+    val runArea = new SLinearLayout {
+      topArea.<<.Weight(1.0f).>>
+      centerArea.<<.Weight(1.0f).>>
+      bottomArea.<<.Weight(1.0f).>>
+    } += topArea += centerArea += bottomArea
+    runArea.setOrientation(runArea.VERTICAL)
+    val main = new SRelativeLayout {
+      thanks.<<.centerInParent.>>
+      welcome.<<.centerInParent.>>
+      runArea.<<.fill.>>
+    } += thanks += welcome += runArea
+    main.setBackground(resources.getDrawable(R.drawable.vertical_blue_800_1200))
     contentView(
-      layout += linearLayout
+      layout += main
     )
     enableUnlock()
   }
@@ -123,7 +149,7 @@ class SurveyRunView extends SActivity with Db {
     else {
       scheduleRestart(
       InactivityDelay, {
-        questionIds = Array();
+        questionIds = Array()
         isStart = true
         update()
       }
