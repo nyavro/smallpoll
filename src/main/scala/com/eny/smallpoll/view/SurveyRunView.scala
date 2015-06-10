@@ -25,6 +25,12 @@ import scala.collection.JavaConversions._
  * Created by Nyavro on 13.05.15
  */
 class SurveyRunView extends SActivity with Db {
+  
+  val SurveyID = "surveyId"
+  val QuestionIDs = "questionIds"
+  val IsStart = "isStart"
+  val SessionID = "sessionID"
+  
   lazy val questionRepository = new QuestionRepository(instance.getReadableDatabase)
   lazy val answerRepository = new AnswerRepository(instance.getReadableDatabase)
   lazy val resultRepository = new ResultRepository(instance.getWritableDatabase)
@@ -174,7 +180,7 @@ class SurveyRunView extends SActivity with Db {
     }
   }
   def initArguments() = {
-    surveyId = getIntent.getLongExtra("surveyId", -1L)
+    surveyId = getIntent.getLongExtra(SurveyID, -1L)
     questionIds = questionRepository.list(surveyId).map(_.id.get).toArray
   }
   def enableUnlock() = {
@@ -238,17 +244,17 @@ class SurveyRunView extends SActivity with Db {
   }
   override def onSaveInstanceState(bundle:Bundle) = {
     super.onSaveInstanceState(bundle)
-    bundle.putLong("suveyId", surveyId)
-    bundle.putLongArray("questionIds", questionIds)
-    bundle.putLong("session", session)
-    bundle.putBoolean("isStart", isStart)
+    bundle.putLong(SurveyID, surveyId)
+    bundle.putLongArray(QuestionIDs, questionIds)
+    bundle.putLong(SessionID, session)
+    bundle.putBoolean(IsStart, isStart)
   }
   override def onRestoreInstanceState(bundle:Bundle) = {
     super.onRestoreInstanceState(bundle)
-    surveyId = bundle.getLong("surveyId")
-    questionIds = Array(bundle.getLong("questionIds"))
-    session = bundle.getLong("session")
-    isStart = bundle.getBoolean("isStart")
+    surveyId = bundle.getLong(SurveyID)
+    questionIds = bundle.getLongArray(QuestionIDs)
+    session = bundle.getLong(SessionID)
+    isStart = bundle.getBoolean(IsStart)
   }
   override def onBackPressed() = {
     //Disable Back button
