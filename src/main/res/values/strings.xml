@@ -75,4 +75,6 @@
     <string name="admin_view_title">Администрирование</string>
     <string name="preferences_view_title">Настройки</string>
     <string name="report_send_view_title">Настройки</string>
+    <string name="background_file_path">Путь к файлу фона</string>
+    <string name="background_file_path_summary">Устанавливает картинку фона опросника</string>
 </resources>

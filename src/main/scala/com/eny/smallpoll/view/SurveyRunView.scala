@@ -1,19 +1,17 @@
 package com.eny.smallpoll.view
 
 import java.util.concurrent.TimeUnit
-import java.util.{TimerTask, Timer, Date}
+import java.util.{Date, Timer, TimerTask}
 
 import android.content.Context
-import android.content.res.Resources
 import android.gesture.GestureOverlayView.OnGesturePerformedListener
-import android.gesture.{GestureLibrary, Gesture, GestureOverlayView, GestureLibraries}
-import android.graphics.{Color, Bitmap, BitmapFactory, PixelFormat}
-import android.graphics.drawable.Drawable
-import android.os.{Build, Handler, Bundle}
-import android.util.{DisplayMetrics, SparseBooleanArray}
+import android.gesture.{Gesture, GestureLibraries, GestureLibrary, GestureOverlayView}
+import android.graphics.{Color, PixelFormat}
+import android.os.{Build, Bundle, Handler}
+import android.util.SparseBooleanArray
 import android.view.WindowManager.LayoutParams
 import android.view._
-import android.widget.{Toast, AbsListView, AdapterView, RelativeLayout}
+import android.widget.{AbsListView, AdapterView, RelativeLayout, Toast}
 import com.eny.smallpoll.R
 import com.eny.smallpoll.model.{Answer, Result}
 import com.eny.smallpoll.report.{Marker, MarkerRepository, ResultRepository}

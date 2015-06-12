@@ -56,6 +56,11 @@
             android:inputType="number"
             android:defaultValue="@string/gesture_threshold_default"
         />
+        <com.eny.smallpoll.view.components.EditPathPreference
+            android:key="background_file_path"
+            android:title="@string/background_file_path"
+            android:summary="@string/background_file_path_summary"
+        />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/report_options">
         <EditTextPreference
