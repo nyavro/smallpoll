@@ -1,12 +1,13 @@
 package com.eny.smallpoll.view
 
+import java.io.File
 import java.util.concurrent.TimeUnit
 import java.util.{Date, Timer, TimerTask}
 
 import android.content.Context
 import android.gesture.GestureOverlayView.OnGesturePerformedListener
 import android.gesture.{Gesture, GestureLibraries, GestureLibrary, GestureOverlayView}
-import android.graphics.{Color, PixelFormat}
+import android.graphics.{BitmapFactory, Color, PixelFormat}
 import android.os.{Build, Bundle, Handler}
 import android.util.SparseBooleanArray
 import android.view.WindowManager.LayoutParams
@@ -109,12 +110,21 @@ class SurveyRunView extends SActivity with Db {
       bottomArea.<<.Weight(1.0f).>>
     } += topArea += centerArea += bottomArea
     runArea.setOrientation(runArea.VERTICAL)
+    val back = new SImageView
+//    val backgroundImagePath = preferences.backgroundPath("")
+//    if(!backgroundImagePath.isEmpty) {
+      val bckgrnd = new File(getApplicationContext.getFilesDir, "portrait.png")
+      if(bckgrnd.exists) {
+        back.setImageBitmap(BitmapFactory.decodeFile(bckgrnd.getPath))
+      }
+//    }
     val main = new SRelativeLayout {
+      back.<<.centerInParent.>>
       thanks.<<.centerInParent.>>
       welcome.<<.centerInParent.>>
       runArea.<<.fill.>>
-    } += thanks += welcome += runArea
-    main.setBackground(resources.getDrawable(R.drawable.vertical_blue_800_1200))
+    } += back += thanks += welcome += runArea
+//    main.setBackground(resources.getDrawable(R.drawable.vertical_blue_800_1200))
     contentView(
       layout += main
     )

@@ -77,4 +77,7 @@
     <string name="report_send_view_title">Настройки</string>
     <string name="background_file_path">Путь к файлу фона</string>
     <string name="background_file_path_summary">Устанавливает картинку фона опросника</string>
+    <string name="crop">Обрезать</string>
+    <string name="сrop_view_title">Редактирование фона</string>
+    <string name="saving">Сохранение</string>
 </resources>

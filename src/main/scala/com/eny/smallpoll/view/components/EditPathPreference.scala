@@ -3,7 +3,7 @@ package com.eny.smallpoll.view.components
 import java.io.{File, FileFilter}
 
 import android.app.AlertDialog
-import android.content.{Context, DialogInterface}
+import android.content.{Context, DialogInterface, Intent}
 import android.os.Environment
 import android.preference.DialogPreference
 import android.util.AttributeSet
@@ -61,10 +61,14 @@ class EditPathPreference(ctx:Context, attrs:AttributeSet) extends DialogPreferen
           val okButton = getDialog.asInstanceOf[AlertDialog].getButton(DialogInterface.BUTTON_POSITIVE)
           if(item.file.isDirectory) {
             files.setAdapter(adapter(item))
-            okButton.setEnabled(false)
+//            crop.setEnabled(false)
           }
           else {
-            okButton.setEnabled(true)
+//            crop.setEnabled(true)
+            val intent = new Intent(getContext, classOf[ImageCropView])
+            intent.putExtra(ImageCropView.SourcePath, activePath)
+            intent.putExtra(ImageCropView.TargetPath, new File(getContext.getFilesDir, "portrait.png").getPath)
+            getContext.startActivity(intent)
           }
         }
       }
