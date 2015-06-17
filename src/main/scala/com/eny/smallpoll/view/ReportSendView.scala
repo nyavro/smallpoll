@@ -1,5 +1,6 @@
 package com.eny.smallpoll.view
 
+import java.io.{File, FileWriter}
 import java.text.{DateFormat, SimpleDateFormat}
 import java.util.concurrent.TimeUnit
 import java.util.{Calendar, Date}
@@ -125,13 +126,28 @@ class ReportSendView extends SActivity with Db {
     toTime.setText(timeFormat.get.format(to))
   }
 
+  //Todo
+  def cleanly[A,B](resource: => A)(cleanup: A => Unit)(code: A => B): Option[B] =
+    try {
+      val r = resource
+      try { Some(code(r)) }
+      finally { cleanup(r) }
+    } catch {
+      case e: Exception => None
+    }
+
   def sendMail(subject:String, body:String) = {
     val preferences = new Preferences(defaultSharedPreferences)
     val intent = new Intent(Intent.ACTION_SEND)
     intent.setType("text/html")
     intent.putExtra(Intent.EXTRA_EMAIL, Array(preferences.sendto("")))
     intent.putExtra(Intent.EXTRA_SUBJECT, subject)
-    intent.putExtra(Intent.EXTRA_TEXT, body)
+    intent.putExtra(Intent.EXTRA_TEXT, subject)
+    val file = new File(getApplicationContext.getFilesDir, "report.xls")
+    cleanly(new FileWriter(new File(getApplicationContext.getFilesDir, "report.xls")))(_.close()) {
+      fw => fw.write(body)
+    }
+    intent.putExtra(Intent.EXTRA_STREAM, file.getPath)
     startActivity(Intent.createChooser(intent, R.string.send_mail_title))
   }
 
