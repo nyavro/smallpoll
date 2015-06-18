@@ -80,4 +80,6 @@
     <string name="crop">Обрезать</string>
     <string name="сrop_view_title">Редактирование фона</string>
     <string name="saving">Сохранение</string>
+    <string name="font_title">Шрифт</string>
+    <string name="font_summary">Шрифт для использования в опросах</string>
 </resources>

@@ -40,6 +40,11 @@
             android:inputType="number"
             android:defaultValue="@string/splash_text_size_default"
             />
+        <com.eny.smallpoll.view.components.FontPreference
+            android:key="font_path"
+            android:title="@string/font_title"
+            android:summary="@string/font_summary"
+        />
         <com.eny.smallpoll.view.components.EditIntPreference
             android:key="question_text_size"
             android:title="@string/question_text_size"
