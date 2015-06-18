@@ -4,7 +4,6 @@ import java.util.Date
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import com.eny.smallpoll.model.Result
 import com.eny.smallpoll.repository.{CursorConversion, Values}
 
 /**
@@ -22,7 +21,11 @@ class MarkerRepository(db: SQLiteDatabase) extends CursorConversion {
   }
   
   def count(from: Date, to: Date, surveyId: Long): Int = {
-    val cursor = db.query(Table, Array(s"COUNT($Session)"), s"$DateField > ? AND $DateField <= ? AND $SurveyIdField=?", Array(from.getTime.toString, to.getTime.toString, surveyId.toString), null, null, null)
+    val cursor = db.query(
+      Table,
+      Array(s"COUNT($Session)"),
+      s"$DateField > ? AND $DateField <= ? AND $SurveyIdField = ? AND $StartField = ?", Array(from.getTime.toString, to.getTime.toString, surveyId.toString, 1.toString), null, null, null
+    )
     cursor.moveToFirst
     cursor.getInt(0)
   }

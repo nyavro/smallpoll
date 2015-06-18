@@ -24,7 +24,8 @@ class TableReport(reports:List[SurveyReport], fromStr:String, toStr:String) {
                |</tr>
                |$answers""".stripMargin
         }.mkString(Separator)
-        s"""<table>
+        s"""<br/><br/><br/>
+           |<table>
            |  <caption>${report.name}</caption>
            |  <tr>
            |    <td>Период</td>

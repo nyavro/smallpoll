@@ -5,8 +5,9 @@ import java.text.{DateFormat, SimpleDateFormat}
 import java.util.concurrent.TimeUnit
 import java.util.{Calendar, Date}
 
-import android.app.{DatePickerDialog, DialogFragment, TimePickerDialog}
+import android.app.{DatePickerDialog, DialogFragment, ProgressDialog, TimePickerDialog}
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.{DatePicker, TimePicker}
 import com.eny.smallpoll.R
@@ -93,12 +94,14 @@ class ReportSendView extends SActivity with Db {
       val toStr = format(to)
       val body =
         s"""
-           |<!DOCTYPE html>
            |<html>
-           |  <body>
-           |    <div>Опросов за период: ${list.size}</div>
-           |    ${new TableReport(list, fromStr, toStr).toString}
-           |  </body>
+           |  <head>
+           |    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+           |  </head>
+           |  <table>
+           |    <tr><td>Опросов за период: </td><td>${list.size}</td></tr>
+           |  </table>
+           |${new TableReport(list, fromStr, toStr).toString}
            |</html>
            |
         """.stripMargin
@@ -138,17 +141,24 @@ class ReportSendView extends SActivity with Db {
 
   def sendMail(subject:String, body:String) = {
     val preferences = new Preferences(defaultSharedPreferences)
-    val intent = new Intent(Intent.ACTION_SEND)
-    intent.setType("text/html")
-    intent.putExtra(Intent.EXTRA_EMAIL, Array(preferences.sendto("")))
-    intent.putExtra(Intent.EXTRA_SUBJECT, subject)
-    intent.putExtra(Intent.EXTRA_TEXT, subject)
-    val file = new File(getApplicationContext.getFilesDir, "report.xls")
-    cleanly(new FileWriter(new File(getApplicationContext.getFilesDir, "report.xls")))(_.close()) {
-      fw => fw.write(body)
-    }
-    intent.putExtra(Intent.EXTRA_STREAM, file.getPath)
-    startActivity(Intent.createChooser(intent, R.string.send_mail_title))
+    val progress = ProgressDialog.show(this, "", getString(R.string.saving))
+    new Thread() {
+      override def run() = {
+        val file = new File(getExternalCacheDir, "report.xls")
+        cleanly(new FileWriter(file))(_.close()) {
+          fw => fw.write(body)
+        }
+        progress.dismiss()
+        val intent = new Intent(Intent.ACTION_SEND)
+        intent.setType("text/plain")
+        intent.putExtra(Intent.EXTRA_EMAIL, Array(preferences.sendto("")))
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject)
+        intent.putExtra(Intent.EXTRA_TEXT, subject)
+
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file))
+        startActivity(Intent.createChooser(intent, R.string.send_mail_title))
+      }
+    }.start()
   }
 
   class TimePickerFragment(h:Int, m:Int, onSet: (Int, Int)=> Unit) extends DialogFragment with TimePickerDialog.OnTimeSetListener {
