@@ -7,12 +7,12 @@ import java.util.{Date, Timer, TimerTask}
 import android.content.Context
 import android.gesture.GestureOverlayView.OnGesturePerformedListener
 import android.gesture.{Gesture, GestureLibraries, GestureLibrary, GestureOverlayView}
-import android.graphics.{BitmapFactory, Color, PixelFormat}
+import android.graphics.{Typeface, BitmapFactory, Color, PixelFormat}
 import android.os.{Build, Bundle, Handler}
 import android.util.SparseBooleanArray
 import android.view.WindowManager.LayoutParams
 import android.view._
-import android.widget.{AbsListView, AdapterView, RelativeLayout, Toast}
+import android.widget._
 import com.eny.smallpoll.R
 import com.eny.smallpoll.model.{Answer, Result}
 import com.eny.smallpoll.report.{Marker, MarkerRepository, ResultRepository}
@@ -88,6 +88,15 @@ class SurveyRunView extends SActivity with Db {
     text.setTextSize(preferences.question_text_size(getString(R.string.question_text_size_default).toInt).toFloat)
     text.gravity(Gravity.CENTER)
     text.setTextColor(Color.BLUE)
+    val fontPath = preferences.font_path("")
+    if(!fontPath.isEmpty) {
+      val typeface = Typeface.createFromFile(fontPath)
+      thanks.setTypeface(typeface)
+      welcome.setTypeface(typeface)
+      text.setTypeface(typeface)
+//      singleChoice.setTypeface
+//      multiChoice.setTypeface
+    }
     layout.onClick {
       if (questionIds.isEmpty && !isStart) {
         initArguments()
@@ -171,8 +180,14 @@ class SurveyRunView extends SActivity with Db {
       val question = questionRepository.load(questionIds.head)
       val answers = answerRepository.list(question.id.get)
       text.setText(question.text)
+      val typeface = {
+        preferences.font_path("") match {
+          case "" => None
+          case path => Some(path)
+        }
+      }.map (Typeface.createFromFile)
       if(question.multi) {
-        multiChoice.setAdapter(new SArrayAdapter(answers.toArray, R.layout.custom_multichoice_layout))
+        multiChoice.setAdapter(new CustomAdapter(answers.toArray, R.layout.custom_multichoice_layout, typeface))
         multiChoice.setVisibility(View.VISIBLE)
         singleChoice.setVisibility(View.GONE)
         next.setVisibility(View.VISIBLE)
@@ -267,4 +282,32 @@ class SurveyRunView extends SActivity with Db {
   override def onBackPressed() = {
     //Disable Back button
   }
+}
+
+class CustomAdapter(items:Array[Answer], res:Int, typeface:Option[Typeface]) extends SArrayAdapter(items, res) {
+
+  def ensureView(view:View, id:Int, group:ViewGroup) =
+    if(view==null) {
+      getContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE).asInstanceOf[LayoutInflater].inflate(id, group)
+    }
+    else {
+      view
+    }
+  
+  override def getView(position:Int, v:View, parent:ViewGroup):View = {
+    val mView = ensureView(v, res, parent)
+    val text = mView.findViewById(android.R.id.text1).asInstanceOf[TextView]
+    if(position < items.length) {
+      text.setText(items(position).toString)
+      typeface.map {
+        item => text.setTypeface(item)
+      }
+//      text.setTextColor(Color.WHITE)
+//      text.setBackgroundColor(Color.RED)
+//      int color = Color.argb( 200, 255, 64, 64 );
+//      text.setBackgroundColor( color );
+    }
+    mView
+  }
+
 }
