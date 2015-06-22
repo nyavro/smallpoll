@@ -284,11 +284,19 @@ class SurveyRunView extends SActivity with Db {
   }
 }
 
-class CustomAdapter(items:Array[Answer], res:Int, typeface:Option[Typeface]) extends SArrayAdapter(items, res) {
+class CustomAdapter(items:Array[Answer], res:Int, typeface:Option[Typeface])(implicit context: android.content.Context) extends SArrayAdapter[Nothing, Answer](items, res) {
+//
+//  def ensureView(view:View, group:ViewGroup) =
+//    if (view == null) {
+//      val inflater = getContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE).asInstanceOf[LayoutInflater]
+//      inflater.inflate(android.R.layout.select_dialog_singlechoice, group, false)
+//    } else {
+//      view
+//    }
 
   def ensureView(view:View, id:Int, group:ViewGroup) =
     if(view==null) {
-      getContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE).asInstanceOf[LayoutInflater].inflate(id, group)
+      getContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE).asInstanceOf[LayoutInflater].inflate(id, group, false)
     }
     else {
       view
