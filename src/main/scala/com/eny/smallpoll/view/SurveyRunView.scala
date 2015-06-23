@@ -19,7 +19,7 @@ import com.eny.smallpoll.report.{Marker, MarkerRepository, ResultRepository}
 import com.eny.smallpoll.repository.{AnswerRepository, QuestionRepository}
 import org.scaloid.common._
 import scala.collection.JavaConversions._
-
+import org.scaloid.util.Configuration._
 /**
  * Created by Nyavro on 13.05.15
  */
@@ -77,25 +77,24 @@ class SurveyRunView extends SActivity with Db {
     }
     multiChoice.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE)
     val splashTextSize = preferences.splash_text_size(getString(R.string.splash_text_size_default).toInt)
+    val splashColor = preferences.splash_color(Color.WHITE)
     thanks.setText(preferences.thanks(getString(R.string.thanks_default)))
     thanks.setTextSize(splashTextSize)
     thanks.gravity(Gravity.CENTER)
-    thanks.setTextColor(Color.BLUE)
+    thanks.setTextColor(splashColor)
     welcome.setText(preferences.welcome(getString(R.string.welcome_default)))
     welcome.setTextSize(splashTextSize)
     welcome.gravity(Gravity.CENTER)
-    welcome.setTextColor(Color.BLUE)
+    welcome.setTextColor(splashColor)
     text.setTextSize(preferences.question_text_size(getString(R.string.question_text_size_default).toInt).toFloat)
     text.gravity(Gravity.CENTER)
-    text.setTextColor(Color.BLUE)
+    text.setTextColor(preferences.question_text_color(Color.WHITE))
     val fontPath = preferences.font_path("")
     if(!fontPath.isEmpty) {
       val typeface = Typeface.createFromFile(fontPath)
       thanks.setTypeface(typeface)
       welcome.setTypeface(typeface)
       text.setTypeface(typeface)
-//      singleChoice.setTypeface
-//      multiChoice.setTypeface
     }
     layout.onClick {
       if (questionIds.isEmpty && !isStart) {
@@ -121,8 +120,8 @@ class SurveyRunView extends SActivity with Db {
     runArea.setOrientation(runArea.VERTICAL)
     val back = new SImageView
 //    val backgroundImagePath = preferences.backgroundPath("")
-//    if(!backgroundImagePath.isEmpty) {
-      val bckgrnd = new File(getApplicationContext.getFilesDir, "portrait.png")
+//    if(!backgroundImagePath.isEmpty) {c
+      val bckgrnd = new File(getApplicationContext.getFilesDir, if(landscape) "landscape.png" else "portrait.png")
       if(bckgrnd.exists) {
         back.setImageBitmap(BitmapFactory.decodeFile(bckgrnd.getPath))
       }
@@ -192,7 +191,7 @@ class SurveyRunView extends SActivity with Db {
         singleChoice.setVisibility(View.GONE)
         next.setVisibility(View.VISIBLE)
       } else {
-        singleChoice.setAdapter(new SArrayAdapter(answers.toArray, R.layout.custom_singlechoice_layout))
+        singleChoice.setAdapter(new CustomAdapter(answers.toArray, R.layout.custom_singlechoice_layout, typeface))
         multiChoice.setVisibility(View.GONE)
         singleChoice.setVisibility(View.VISIBLE)
         next.setVisibility(View.GONE)
@@ -217,7 +216,7 @@ class SurveyRunView extends SActivity with Db {
           gestureLib.recognize(gesture).map {
             prediction =>
               if (prediction.score > UnlockGestureThreshold) {
-                lock.release()
+                showSystem()
                 Toast.makeText(SurveyRunView.this, prediction.name + s" score:${prediction.score}", Toast.LENGTH_SHORT).show()
                 finish()
               }
@@ -247,6 +246,28 @@ class SurveyRunView extends SActivity with Db {
         new RelativeLayout(this),
         params
       )
+  }
+  def showSystem() = {
+    if(Build.VERSION.SDK_INT>Build.VERSION_CODES.JELLY_BEAN) {
+      lock.unlock()
+    }
+//    getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN)
+    getActionBar.show()
+//    val params = new LayoutParams(
+//      WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
+//      WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+//      PixelFormat.TRANSPARENT
+//    )
+//    params.gravity = Gravity.TOP
+//    params.width = ViewGroup.LayoutParams.MATCH_PARENT
+//    params.height = (50 * getResources.getDisplayMetrics.scaledDensity).toInt
+//    getApplicationContext
+//      .getSystemService(Context.WINDOW_SERVICE)
+//      .asInstanceOf[WindowManager]
+//      .addView(
+//        new RelativeLayout(this),
+//        params
+//      )
   }
   def scheduleRestart(delay: Int, code: => Unit) = {
     restartTimer.schedule(
@@ -285,14 +306,7 @@ class SurveyRunView extends SActivity with Db {
 }
 
 class CustomAdapter(items:Array[Answer], res:Int, typeface:Option[Typeface])(implicit context: android.content.Context) extends SArrayAdapter[Nothing, Answer](items, res) {
-//
-//  def ensureView(view:View, group:ViewGroup) =
-//    if (view == null) {
-//      val inflater = getContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE).asInstanceOf[LayoutInflater]
-//      inflater.inflate(android.R.layout.select_dialog_singlechoice, group, false)
-//    } else {
-//      view
-//    }
+  lazy val prefs = new Preferences(defaultSharedPreferences)
 
   def ensureView(view:View, id:Int, group:ViewGroup) =
     if(view==null) {
@@ -307,13 +321,11 @@ class CustomAdapter(items:Array[Answer], res:Int, typeface:Option[Typeface])(imp
     val text = mView.findViewById(android.R.id.text1).asInstanceOf[TextView]
     if(position < items.length) {
       text.setText(items(position).toString)
+      text.setTextColor(prefs.answer_text_color(Color.WHITE))
+      text.setTextSize(prefs.answer_text_size(context.getString(R.string.question_text_size_default).toInt).toFloat)
       typeface.map {
         item => text.setTypeface(item)
       }
-//      text.setTextColor(Color.WHITE)
-//      text.setBackgroundColor(Color.RED)
-//      int color = Color.argb( 200, 255, 64, 64 );
-//      text.setBackgroundColor( color );
     }
     mView
   }

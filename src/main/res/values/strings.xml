@@ -82,4 +82,17 @@
     <string name="saving">Сохранение</string>
     <string name="font_title">Шрифт</string>
     <string name="font_summary">Шрифт для использования в опросах</string>
+    <string name="splash_color_title">Цвет текста приветствия/благодарности</string>
+    <string name="answer_text_color_title">Цвет текста вопроса</string>
+    <string name="question_text_color_title">Цвет текста ответа</string>
+    <string name="splash_color_summary">Устанавливает цвет текста приветствия/благодарности</string>
+    <string name="answer_text_color_summary">Устанавливает цвет текста вопроса</string>
+    <string name="question_text_color_summary">Устанавливает цвет текста ответа</string>
+    <string name="answer_text_size">Размер шрифта ответа</string>
+    <string name="answer_text_size_summary">Устанавливает размер шрифта ответа</string>
+    <string name="answer_text_size_edit">Изменить размер шрифта ответа</string>
+    <string name="answer_text_size_default">18</string>
+    <string name="background_portrait_file_path">Путь к файлу фона (портретный)</string>
+    <string name="background_portrait_file_path_summary">Устанавливает картинку фона опросника в портретной ориентации
+    </string>
 </resources>

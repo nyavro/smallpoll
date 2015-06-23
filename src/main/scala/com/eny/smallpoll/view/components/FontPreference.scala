@@ -19,7 +19,7 @@ class FontPreference(ctx:Context, attrs:AttributeSet) extends DialogPreference(c
 
   class FontAdapter extends BaseAdapter {
 
-    override def getCount() = fonts.size
+    override def getCount = fonts.size
 
     override def getItem(position: Int) = fonts(position) match {
       case (path, name) => name

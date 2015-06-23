@@ -13,14 +13,8 @@ import android.widget._
 import com.eny.smallpoll.R
 import org.scaloid.common.Preferences
 
-/**
- * Created by eny on 15.05.15.
- */
-case class Wrap(file:File, displayName:Option[String] = None) {
-  override def toString = displayName.getOrElse(file.getName)
-}
-
-class EditPathPreference(ctx:Context, attrs:AttributeSet) extends DialogPreference(ctx,attrs) {
+//TODO!!!!!!!!!!!!!!!!
+class EditPathPreference2(ctx:Context, attrs:AttributeSet) extends DialogPreference(ctx,attrs) {
 
   setDialogLayoutResource(R.layout.file_choose)
 
@@ -67,7 +61,7 @@ class EditPathPreference(ctx:Context, attrs:AttributeSet) extends DialogPreferen
 //            crop.setEnabled(true)
             val intent = new Intent(getContext, classOf[ImageCropView])
             intent.putExtra(ImageCropView.SourcePath, activePath)
-            intent.putExtra(ImageCropView.TargetPath, new File(getContext.getFilesDir, "portrait.png").getPath)
+            intent.putExtra(ImageCropView.TargetPath, new File(getContext.getFilesDir, "landscape.png").getPath)
             getContext.startActivity(intent)
           }
         }

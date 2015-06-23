@@ -25,9 +25,9 @@ class LoginView extends SActivity with Db {
         startActivity(new Intent(LoginView.this, classOf[AdminView]))
       } else {
         Thread.sleep(2000)
-        password.setText("")
         error.setVisibility(View.VISIBLE)
       }
+      password.setText("")
     }
     setContentView(new SVerticalLayout += error += password += login)
   }

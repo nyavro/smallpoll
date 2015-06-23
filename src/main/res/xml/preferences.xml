@@ -32,6 +32,21 @@
             android:inputType="number"
             android:defaultValue="@string/restart_delay_default"
         />
+        <com.eny.smallpoll.view.components.ColorPreference
+            android:key="splash_color"
+            android:title="@string/splash_color_title"
+            android:summary="@string/splash_color_summary"
+        />
+        <com.eny.smallpoll.view.components.ColorPreference
+            android:key="question_text_color"
+            android:title="@string/question_text_color_title"
+            android:summary="@string/question_text_color_summary"
+        />
+        <com.eny.smallpoll.view.components.ColorPreference
+            android:key="answer_text_color"
+            android:title="@string/answer_text_color_title"
+            android:summary="@string/answer_text_color_summary"
+        />
         <com.eny.smallpoll.view.components.EditIntPreference
             android:key="splash_text_size"
             android:title="@string/splash_text_size"
@@ -54,6 +69,14 @@
             android:defaultValue="@string/question_text_size_default"
             />
         <com.eny.smallpoll.view.components.EditIntPreference
+            android:key="answer_text_size"
+            android:title="@string/answer_text_size"
+            android:summary="@string/answer_text_size_summary"
+            android:dialogTitle="@string/answer_text_size_edit"
+            android:inputType="number"
+            android:defaultValue="@string/answer_text_size_default"
+        />
+        <com.eny.smallpoll.view.components.EditIntPreference
             android:key="gesture_threshold"
             android:title="@string/gesture_threshold"
             android:summary="@string/gesture_threshold_summary"
@@ -61,10 +84,15 @@
             android:inputType="number"
             android:defaultValue="@string/gesture_threshold_default"
         />
-        <com.eny.smallpoll.view.components.EditPathPreference
+        <com.eny.smallpoll.view.components.EditPathPreference2
             android:key="background_file_path"
             android:title="@string/background_file_path"
             android:summary="@string/background_file_path_summary"
+        />
+        <com.eny.smallpoll.view.components.EditPathPreference
+            android:key="background_portrait_file_path"
+            android:title="@string/background_portrait_file_path"
+            android:summary="@string/background_portrait_file_path_summary"
         />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/report_options">

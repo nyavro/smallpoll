@@ -13,7 +13,7 @@ class Lock(activity:Activity) {
 
   def lock() = overlay.show()
 
-  def release() = overlay.dismiss()
+  def unlock() = overlay.dismiss()
 
   class OverlayDialog(activity:Activity) extends AlertDialog(activity) {
     val params = getWindow.getAttributes
