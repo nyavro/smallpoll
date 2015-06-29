@@ -45,7 +45,7 @@ class SurveyRunView extends SActivity with Db {
   lazy val EndDelay = preferences.end_screen_delay(getString(R.string.end_screen_delay_default).toInt)
   lazy val InactivityDelay = preferences.inactivity_screen_delay(getString(R.string.restart_delay_default).toInt)
   lazy val UnlockGestureThreshold = preferences.gesture_threshold(getString(R.string.gesture_threshold_default).toInt)
-  lazy val lock: Lock = new Lock(this)
+  lazy val systemLock = new SystemLock(this)
   val handler = new Handler
   var restartTimer = new Timer
   var questionIds = Array[Long]()
@@ -55,7 +55,6 @@ class SurveyRunView extends SActivity with Db {
   var gestureLib:GestureLibrary = _
 
   onCreate {
-    hideSystem()
     next.onClick {
       def selectedIds(i: Int, ids: SparseBooleanArray): List[Long] =
         if (i < ids.size)
@@ -216,7 +215,7 @@ class SurveyRunView extends SActivity with Db {
           gestureLib.recognize(gesture).map {
             prediction =>
               if (prediction.score > UnlockGestureThreshold) {
-                showSystem()
+                systemLock.unlock()
                 Toast.makeText(SurveyRunView.this, prediction.name + s" score:${prediction.score}", Toast.LENGTH_SHORT).show()
                 finish()
               }
@@ -224,50 +223,6 @@ class SurveyRunView extends SActivity with Db {
         }
       }
     )
-  }
-  def hideSystem() = {
-    if(Build.VERSION.SDK_INT>Build.VERSION_CODES.JELLY_BEAN) {
-      lock.lock()
-    }
-    getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN)
-    getActionBar.hide()
-    val params = new LayoutParams(
-      WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
-      WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-      PixelFormat.TRANSPARENT
-    )
-    params.gravity = Gravity.TOP
-    params.width = ViewGroup.LayoutParams.MATCH_PARENT
-    params.height = (50 * getResources.getDisplayMetrics.scaledDensity).toInt
-    getApplicationContext
-      .getSystemService(Context.WINDOW_SERVICE)
-      .asInstanceOf[WindowManager]
-      .addView(
-        new RelativeLayout(this),
-        params
-      )
-  }
-  def showSystem() = {
-    if(Build.VERSION.SDK_INT>Build.VERSION_CODES.JELLY_BEAN) {
-      lock.unlock()
-    }
-//    getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN)
-    getActionBar.show()
-//    val params = new LayoutParams(
-//      WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
-//      WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-//      PixelFormat.TRANSPARENT
-//    )
-//    params.gravity = Gravity.TOP
-//    params.width = ViewGroup.LayoutParams.MATCH_PARENT
-//    params.height = (50 * getResources.getDisplayMetrics.scaledDensity).toInt
-//    getApplicationContext
-//      .getSystemService(Context.WINDOW_SERVICE)
-//      .asInstanceOf[WindowManager]
-//      .addView(
-//        new RelativeLayout(this),
-//        params
-//      )
   }
   def scheduleRestart(delay: Int, code: => Unit) = {
     restartTimer.schedule(
@@ -284,10 +239,12 @@ class SurveyRunView extends SActivity with Db {
     )
   }
   onResume {
+    systemLock.lock()
     update()
   }
   override def onSaveInstanceState(bundle:Bundle) = {
     super.onSaveInstanceState(bundle)
+    systemLock.unlock()
     bundle.putLong(SurveyID, surveyId)
     bundle.putLongArray(QuestionIDs, questionIds)
     bundle.putLong(SessionID, session)

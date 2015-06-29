@@ -1,7 +1,7 @@
 package com.eny.smallpoll.view
 
 import android.app.{Activity, AlertDialog}
-import android.os.Bundle
+import android.os.{Build, Bundle}
 import android.view.{MotionEvent, Gravity, WindowManager}
 import android.widget.FrameLayout
 
@@ -9,11 +9,19 @@ import android.widget.FrameLayout
  * Created by eny on 16.05.15.
  */
 class Lock(activity:Activity) {
-  val overlay = new OverlayDialog(activity)
+  lazy val overlay = new OverlayDialog(activity)
 
-  def lock() = overlay.show()
+  def lock() = {
+    if(Build.VERSION.SDK_INT>Build.VERSION_CODES.JELLY_BEAN) {
+      overlay.show()
+    }
+  }
 
-  def unlock() = overlay.dismiss()
+  def unlock() = {
+    if(Build.VERSION.SDK_INT>Build.VERSION_CODES.JELLY_BEAN) {
+      overlay.dismiss()
+    }
+  }
 
   class OverlayDialog(activity:Activity) extends AlertDialog(activity) {
     val params = getWindow.getAttributes
