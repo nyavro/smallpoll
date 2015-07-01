@@ -29,6 +29,7 @@ class SystemLock(activity:Activity) {
 
   def lock() = if(!locked) {
       lock1.lock()
+      activity.getWindow.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
       activity.getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN)
       activity.getActionBar.hide()
       activity.getApplicationContext
@@ -43,6 +44,7 @@ class SystemLock(activity:Activity) {
 
   def unlock() = if(locked) {
       lock1.unlock()
+      activity.getWindow.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
       activity.getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE)
       activity.getActionBar.show()
       activity.getApplicationContext
