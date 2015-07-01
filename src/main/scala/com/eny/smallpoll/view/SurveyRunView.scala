@@ -14,9 +14,9 @@ import android.view.WindowManager.LayoutParams
 import android.view._
 import android.widget._
 import com.eny.smallpoll.R
-import com.eny.smallpoll.model.{Answer, Result}
-import com.eny.smallpoll.report.{Marker, MarkerRepository, ResultRepository}
-import com.eny.smallpoll.repository.{AnswerRepository, QuestionRepository}
+import com.eny.smallpoll.model.{Marker, Answer, Result}
+import com.eny.smallpoll.report.ResultRepository
+import com.eny.smallpoll.repository.{MarkerRepository, AnswerRepository, QuestionRepository}
 import org.scaloid.common._
 import scala.collection.JavaConversions._
 import org.scaloid.util.Configuration._
@@ -118,20 +118,16 @@ class SurveyRunView extends SActivity with Db {
     } += topArea += centerArea += bottomArea
     runArea.setOrientation(runArea.VERTICAL)
     val back = new SImageView
-//    val backgroundImagePath = preferences.backgroundPath("")
-//    if(!backgroundImagePath.isEmpty) {c
       val bckgrnd = new File(getApplicationContext.getFilesDir, if(landscape) "landscape.png" else "portrait.png")
       if(bckgrnd.exists) {
         back.setImageBitmap(BitmapFactory.decodeFile(bckgrnd.getPath))
       }
-//    }
     val main = new SRelativeLayout {
       back.<<.centerInParent.>>
       thanks.<<.centerInParent.>>
       welcome.<<.centerInParent.>>
       runArea.<<.fill.>>
     } += back += thanks += welcome += runArea
-//    main.setBackground(resources.getDrawable(R.drawable.vertical_blue_800_1200))
     contentView(
       layout += main
     )

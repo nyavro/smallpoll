@@ -11,8 +11,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.{DatePicker, TimePicker}
 import com.eny.smallpoll.R
-import com.eny.smallpoll.report.{MarkerRepository, Report, ResultRepository, TableReport}
-import com.eny.smallpoll.repository.{AnswerRepository, QuestionRepository, SurveyRepository}
+import com.eny.smallpoll.report.{Report, ResultRepository, TableReport}
+import com.eny.smallpoll.repository.{MarkerRepository, AnswerRepository, QuestionRepository, SurveyRepository}
 import org.scaloid.common._
 
 class ReportSendView extends SActivity with Db {

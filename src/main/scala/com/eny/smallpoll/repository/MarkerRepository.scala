@@ -1,10 +1,10 @@
-package com.eny.smallpoll.report
+package com.eny.smallpoll.repository
 
 import java.util.Date
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import com.eny.smallpoll.repository.{CursorConversion, Values}
+import com.eny.smallpoll.model.Marker
 
 /**
   * Created by Nyavro on 13.05.15

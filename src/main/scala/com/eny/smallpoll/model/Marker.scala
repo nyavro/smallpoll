@@ -1,4 +1,4 @@
-package com.eny.smallpoll.report
+package com.eny.smallpoll.model
 
 import java.util.Date
 

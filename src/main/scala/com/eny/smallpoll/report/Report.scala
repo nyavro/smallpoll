@@ -3,11 +3,16 @@ package com.eny.smallpoll.report
 import java.util.Date
 
 import com.eny.smallpoll.model.Question
-import com.eny.smallpoll.repository.{SurveyRepository, QuestionRepository, AnswerRepository}
+import com.eny.smallpoll.repository.{MarkerRepository, SurveyRepository, QuestionRepository, AnswerRepository}
 
 /**
  * Created by Nyavro on 15.05.15
  */
+
+case class AnswerReport(answer:String, count:Int)
+case class QuestionReport(question:String, answerReports:List[AnswerReport])
+case class SurveyReport(from:Date, to:Date, name:String, asked:Int, questionReports:List[QuestionReport])
+
 class Report(markers:MarkerRepository, results:ResultRepository, answers:AnswerRepository, questions:QuestionRepository, surveys:SurveyRepository) {
   def result(from:Date, to:Date): List[SurveyReport] = {
     val answerCounts = results.report(from, to)
