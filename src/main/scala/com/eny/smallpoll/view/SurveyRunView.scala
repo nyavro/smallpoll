@@ -8,6 +8,7 @@ import android.content.Context
 import android.gesture.GestureOverlayView.OnGesturePerformedListener
 import android.gesture.{Gesture, GestureLibraries, GestureLibrary, GestureOverlayView}
 import android.graphics.{Typeface, BitmapFactory, Color, PixelFormat}
+import android.media.MediaPlayer
 import android.os.{Build, Bundle, Handler}
 import android.util.SparseBooleanArray
 import android.view.WindowManager.LayoutParams
@@ -117,11 +118,7 @@ class SurveyRunView extends SActivity with Db {
       bottomArea.<<.Weight(1.0f).>>
     } += topArea += centerArea += bottomArea
     runArea.setOrientation(runArea.VERTICAL)
-    val back = new SImageView
-      val bckgrnd = new File(getApplicationContext.getFilesDir, if(landscape) "landscape.png" else "portrait.png")
-      if(bckgrnd.exists) {
-        back.setImageBitmap(BitmapFactory.decodeFile(bckgrnd.getPath))
-      }
+    val back = initBackground
     val main = new SRelativeLayout {
       back.<<.centerInParent.>>
       thanks.<<.centerInParent.>>
@@ -133,6 +130,26 @@ class SurveyRunView extends SActivity with Db {
     )
     enableUnlock()
   }
+
+  def initBackground: View with TraitView[_ >: SImageView with SVideoView <: View with TraitView[_ >: SImageView with SVideoView]] = {
+    val videoPath = preferences.background_video_path("")
+    if (videoPath.isEmpty) {
+      val back = new SImageView
+      val bckgrnd = new File(getApplicationContext.getFilesDir, if (landscape) "landscape.png" else "portrait.png")
+      if (bckgrnd.exists) {
+        back.setImageBitmap(BitmapFactory.decodeFile(bckgrnd.getPath))
+      }
+      back
+    }
+    else {
+      val back = new SVideoView
+      back.videoPath = preferences.background_video_path("")
+      back.onPrepared { mp: MediaPlayer => mp.setLooping(true)}
+      back.start()
+      back
+    }
+  }
+
   def update():Unit = {
     restartTimer.cancel()
     restartTimer = new Timer
@@ -180,13 +197,31 @@ class SurveyRunView extends SActivity with Db {
           case path => Some(path)
         }
       }.map (Typeface.createFromFile)
+      val textColor = Some(preferences.answer_text_color(Color.WHITE))
+      val textSize = Some(preferences.answer_text_size(getString(R.string.question_text_size_default).toInt).toFloat)
       if(question.multi) {
-        multiChoice.setAdapter(new CustomAdapter(answers.toArray, R.layout.custom_multichoice_layout, typeface))
+        multiChoice.setAdapter(
+          new CustomAdapter(
+            answers.toArray,
+            R.layout.custom_multichoice_layout,
+            typeface,
+            textColor,
+            textSize
+          )
+        )
         multiChoice.setVisibility(View.VISIBLE)
         singleChoice.setVisibility(View.GONE)
         next.setVisibility(View.VISIBLE)
       } else {
-        singleChoice.setAdapter(new CustomAdapter(answers.toArray, R.layout.custom_singlechoice_layout, typeface))
+        singleChoice.setAdapter(
+          new CustomAdapter(
+            answers.toArray,
+            R.layout.custom_singlechoice_layout,
+            typeface,
+            textColor,
+            textSize
+          )
+        )
         multiChoice.setVisibility(View.GONE)
         singleChoice.setVisibility(View.VISIBLE)
         next.setVisibility(View.GONE)
@@ -256,31 +291,4 @@ class SurveyRunView extends SActivity with Db {
   override def onBackPressed() = {
     //Disable Back button
   }
-}
-
-class CustomAdapter(items:Array[Answer], res:Int, typeface:Option[Typeface])(implicit context: android.content.Context) extends SArrayAdapter[Nothing, Answer](items, res) {
-  lazy val prefs = new Preferences(defaultSharedPreferences)
-
-  def ensureView(view:View, id:Int, group:ViewGroup) =
-    if(view==null) {
-      getContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE).asInstanceOf[LayoutInflater].inflate(id, group, false)
-    }
-    else {
-      view
-    }
-  
-  override def getView(position:Int, v:View, parent:ViewGroup):View = {
-    val mView = ensureView(v, res, parent)
-    val text = mView.findViewById(android.R.id.text1).asInstanceOf[TextView]
-    if(position < items.length) {
-      text.setText(items(position).toString)
-      text.setTextColor(prefs.answer_text_color(Color.WHITE))
-      text.setTextSize(prefs.answer_text_size(context.getString(R.string.question_text_size_default).toInt).toFloat)
-      typeface.map {
-        item => text.setTypeface(item)
-      }
-    }
-    mView
-  }
-
 }

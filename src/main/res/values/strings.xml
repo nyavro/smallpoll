@@ -93,6 +93,7 @@
     <string name="answer_text_size_edit">Изменить размер шрифта ответа</string>
     <string name="answer_text_size_default">18</string>
     <string name="background_portrait_file_path">Путь к файлу фона (портретный)</string>
-    <string name="background_portrait_file_path_summary">Устанавливает картинку фона опросника в портретной ориентации
-    </string>
+    <string name="background_portrait_file_path_summary">Устанавливает картинку фона опросника в портретной ориентации</string>
+    <string name="background_video_path">Устанавливает видео фон</string>
+    <string name="background_video_path_summary">Устанавливает видео в качестве фона</string>
 </resources>

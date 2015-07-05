@@ -89,6 +89,11 @@
             android:title="@string/background_file_path"
             android:summary="@string/background_file_path_summary"
         />
+        <com.eny.smallpoll.view.components.EditPathPreference3
+            android:key="background_video_path"
+            android:title="@string/background_video_path"
+            android:summary="@string/background_video_path_summary"
+        />
         <com.eny.smallpoll.view.components.EditPathPreference
             android:key="background_portrait_file_path"
             android:title="@string/background_portrait_file_path"
