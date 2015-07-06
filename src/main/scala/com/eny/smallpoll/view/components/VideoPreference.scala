@@ -17,7 +17,7 @@ import org.scaloid.common.Preferences
  * Created by eny on 15.05.15.
  */
 
-class EditPathPreference3(ctx:Context, attrs:AttributeSet) extends DialogPreference(ctx,attrs) {
+class VideoPreference(ctx:Context, attrs:AttributeSet) extends DialogPreference(ctx,attrs) {
 
   setDialogLayoutResource(R.layout.file_choose)
 
@@ -58,15 +58,6 @@ class EditPathPreference3(ctx:Context, attrs:AttributeSet) extends DialogPrefere
           val okButton = getDialog.asInstanceOf[AlertDialog].getButton(DialogInterface.BUTTON_POSITIVE)
           if(item.file.isDirectory) {
             files.setAdapter(adapter(item))
-//            crop.setEnabled(false)
-          }
-          else {
-//            crop.setEnabled(true)
-//            val intent = new Intent(getContext, classOf[ImageCropView])
-//            intent.putExtra(ImageCropView.SourcePath, activePath)
-//            intent.putExtra(ImageCropView.TargetPath, new File(getContext.getFilesDir, "portrait.png").getPath)
-//            getContext.startActivity(intent)
-
           }
         }
       }

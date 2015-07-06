@@ -4,23 +4,22 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import java.util.{Date, Timer, TimerTask}
 
-import android.content.Context
 import android.gesture.GestureOverlayView.OnGesturePerformedListener
 import android.gesture.{Gesture, GestureLibraries, GestureLibrary, GestureOverlayView}
-import android.graphics.{Typeface, BitmapFactory, Color, PixelFormat}
+import android.graphics.{BitmapFactory, Color, Typeface}
 import android.media.MediaPlayer
-import android.os.{Build, Bundle, Handler}
+import android.os.{Bundle, Handler}
 import android.util.SparseBooleanArray
-import android.view.WindowManager.LayoutParams
 import android.view._
 import android.widget._
 import com.eny.smallpoll.R
-import com.eny.smallpoll.model.{Marker, Answer, Result}
+import com.eny.smallpoll.model.{Answer, Marker, Result}
 import com.eny.smallpoll.report.ResultRepository
-import com.eny.smallpoll.repository.{MarkerRepository, AnswerRepository, QuestionRepository}
+import com.eny.smallpoll.repository.{AnswerRepository, MarkerRepository, QuestionRepository}
 import org.scaloid.common._
-import scala.collection.JavaConversions._
 import org.scaloid.util.Configuration._
+
+import scala.collection.JavaConversions._
 /**
  * Created by Nyavro on 13.05.15
  */
@@ -47,6 +46,10 @@ class SurveyRunView extends SActivity with Db {
   lazy val InactivityDelay = preferences.inactivity_screen_delay(getString(R.string.restart_delay_default).toInt)
   lazy val UnlockGestureThreshold = preferences.gesture_threshold(getString(R.string.gesture_threshold_default).toInt)
   lazy val systemLock = new SystemLock(this)
+  lazy val typeface = {
+    val fontPath = preferences.font_path("")
+    if(fontPath.isEmpty) None else Some(Typeface.createFromFile(fontPath))
+  }
   val handler = new Handler
   var restartTimer = new Timer
   var questionIds = Array[Long]()
@@ -78,24 +81,16 @@ class SurveyRunView extends SActivity with Db {
     multiChoice.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE)
     val splashTextSize = preferences.splash_text_size(getString(R.string.splash_text_size_default).toInt)
     val splashColor = preferences.splash_color(Color.WHITE)
-    thanks.setText(preferences.thanks(getString(R.string.thanks_default)))
-    thanks.setTextSize(splashTextSize)
-    thanks.gravity(Gravity.CENTER)
-    thanks.setTextColor(splashColor)
-    welcome.setText(preferences.welcome(getString(R.string.welcome_default)))
-    welcome.setTextSize(splashTextSize)
-    welcome.gravity(Gravity.CENTER)
-    welcome.setTextColor(splashColor)
-    text.setTextSize(preferences.question_text_size(getString(R.string.question_text_size_default).toInt).toFloat)
-    text.gravity(Gravity.CENTER)
-    text.setTextColor(preferences.question_text_color(Color.WHITE))
-    val fontPath = preferences.font_path("")
-    if(!fontPath.isEmpty) {
-      val typeface = Typeface.createFromFile(fontPath)
-      thanks.setTypeface(typeface)
-      welcome.setTypeface(typeface)
-      text.setTypeface(typeface)
+    def initTextView(view:TextView, text:String, textSize:Float, color:Int, typeface:Option[Typeface]) = {
+      view.setText(text)
+      view.setTextSize(textSize)
+      view.setTextColor(color)
+      view.gravity(Gravity.CENTER)
+      typeface.map(view.setTypeface)
     }
+    initTextView(thanks, preferences.thanks(getString(R.string.thanks_default)), splashTextSize, splashColor, typeface)
+    initTextView(welcome, preferences.welcome(getString(R.string.welcome_default)), splashTextSize, splashColor, typeface)
+    initTextView(text, "", preferences.question_text_size(getString(R.string.question_text_size_default).toInt).toFloat, preferences.question_text_color(Color.WHITE), typeface)
     layout.onClick {
       if (questionIds.isEmpty && !isStart) {
         initArguments()
@@ -154,78 +149,44 @@ class SurveyRunView extends SActivity with Db {
     restartTimer.cancel()
     restartTimer = new Timer
     if(questionIds.isEmpty) {
-      if(isStart) {
-        welcome.setVisibility(View.VISIBLE)
-        thanks.setVisibility(View.GONE)
-        multiChoice.setVisibility(View.GONE)
-        singleChoice.setVisibility(View.GONE)
-        next.setVisibility(View.GONE)
-        text.setVisibility(View.GONE)
-        markerRepository.save(Marker(session, new Date, start = true, surveyId))
-        isStart = false
+      markerRepository.save(Marker(session, new Date, start = isStart, surveyId))
+      if(!isStart) {
+        scheduleRestart(EndDelay, {update()})
       }
-      else {
-        welcome.setVisibility(View.GONE)
-        thanks.setVisibility(View.VISIBLE)
-        multiChoice.setVisibility(View.GONE)
-        singleChoice.setVisibility(View.GONE)
-        next.setVisibility(View.GONE)
-        text.setVisibility(View.GONE)
-        markerRepository.save(Marker(session, new Date, start = false, surveyId))
-        isStart = true
-        scheduleRestart(
-        EndDelay, {
-          update()
-        }
-        )
-      }
+      isStart = !isStart
+      welcome.setVisibility(if(isStart) View.VISIBLE else View.GONE)
+      thanks.setVisibility(if(isStart) View.GONE else View.VISIBLE)
+      multiChoice.setVisibility(View.GONE)
+      singleChoice.setVisibility(View.GONE)
+      next.setVisibility(View.GONE)
+      text.setVisibility(View.GONE)
     }
     else {
       scheduleRestart(
-      InactivityDelay, {
-        questionIds = Array()
-        isStart = true
-        update()
-      }
+        InactivityDelay, {
+          questionIds = Array()
+          isStart = true
+          update()
+        }
       )
       val question = questionRepository.load(questionIds.head)
       val answers = answerRepository.list(question.id.get)
       text.setText(question.text)
-      val typeface = {
-        preferences.font_path("") match {
-          case "" => None
-          case path => Some(path)
-        }
-      }.map (Typeface.createFromFile)
-      val textColor = Some(preferences.answer_text_color(Color.WHITE))
-      val textSize = Some(preferences.answer_text_size(getString(R.string.question_text_size_default).toInt).toFloat)
+      val adapter = new CustomAdapter(
+        answers.toArray,
+        R.layout.custom_multichoice_layout,
+        typeface,
+        Some(preferences.answer_text_color(Color.WHITE)),
+        Some(preferences.answer_text_size(getString(R.string.question_text_size_default).toInt).toFloat)
+      )
       if(question.multi) {
-        multiChoice.setAdapter(
-          new CustomAdapter(
-            answers.toArray,
-            R.layout.custom_multichoice_layout,
-            typeface,
-            textColor,
-            textSize
-          )
-        )
-        multiChoice.setVisibility(View.VISIBLE)
-        singleChoice.setVisibility(View.GONE)
-        next.setVisibility(View.VISIBLE)
+        multiChoice.setAdapter(adapter)
       } else {
-        singleChoice.setAdapter(
-          new CustomAdapter(
-            answers.toArray,
-            R.layout.custom_singlechoice_layout,
-            typeface,
-            textColor,
-            textSize
-          )
-        )
-        multiChoice.setVisibility(View.GONE)
-        singleChoice.setVisibility(View.VISIBLE)
-        next.setVisibility(View.GONE)
+        singleChoice.setAdapter(adapter)
       }
+      multiChoice.setVisibility(if(question.multi) View.VISIBLE else View.GONE)
+      next.setVisibility(if(question.multi) View.VISIBLE else View.GONE)
+      singleChoice.setVisibility(if(question.multi) View.GONE else View.VISIBLE)
       text.setVisibility(View.VISIBLE)
       thanks.setVisibility(View.GONE)
       welcome.setVisibility(View.GONE)
