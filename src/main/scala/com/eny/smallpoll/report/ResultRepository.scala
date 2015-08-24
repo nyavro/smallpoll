@@ -7,15 +7,16 @@ import android.database.sqlite.SQLiteDatabase
 import com.eny.smallpoll.model.Result
 import com.eny.smallpoll.repository.{CursorConversion, Values}
 
-/**
- * Created by Nyavro on 13.05.15
- */
 case class Full(surveyId:Long, name:String, question:String, answer:String, count:Int)
 class ResultRepository(db: SQLiteDatabase) extends CursorConversion {
 
   val Table = "result"
   val DateField = "date"
   val AnswerIdField = "answer_id"
+
+  def init() = {
+    db.execSQL(s"CREATE TABLE $Table (date integer not null, answer_id LONG NOT NULL, FOREIGN KEY(answer_id) REFERENCES answer(_id) ON DELETE CASCADE)")
+  }
 
   def report(from: Date, to: Date):Map[Long, Int] = {
     val cursor = db.rawQuery(

@@ -11,6 +11,10 @@ class SurveyRepository(db:SQLiteDatabase) extends CursorConversion {
 
   val Table = "survey"
 
+  def init() = {
+    db.execSQL(s"CREATE TABLE $Table (_id INTEGER PRIMARY KEY, name text not null)")
+  }
+
   def remove(id: Long):Unit = {
     db.delete(Table, "_id=?", Array(id.toString))
   }
@@ -36,6 +40,10 @@ class SurveyRepository(db:SQLiteDatabase) extends CursorConversion {
       case None =>
         db.insert(Table, null, values)
     }
+  }
+
+  def clean() = {
+    db.execSQL(s"DELETE FROM $Table", Array())
   }
 
   private def convert(cursor:Cursor) = Survey(Some(cursor.getLong(0)), cursor.getString(1))
