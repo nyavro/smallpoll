@@ -8,6 +8,7 @@ import android.os.Environment
 import android.preference.DialogPreference
 import android.util.AttributeSet
 import android.view.View
+import android.view.View.OnClickListener
 import android.widget.AdapterView.OnItemClickListener
 import android.widget._
 import com.eny.smallpoll.R
@@ -73,6 +74,14 @@ class EditPathPreference(ctx:Context, attrs:AttributeSet) extends DialogPreferen
         }
       }
     )
+    val clean = view.findViewById(R.id.clean).asInstanceOf[Button]
+    clean.setOnClickListener(
+      new OnClickListener() {
+        override def onClick(v: View): Unit = {
+          activePath = ""
+        }
+      }
+    )
     super.onBindDialogView(view)
   }
 
@@ -94,7 +103,7 @@ class EditPathPreference(ctx:Context, attrs:AttributeSet) extends DialogPreferen
 
   override def onDialogClosed(positive:Boolean) = {
     super.onDialogClosed(positive)
-    if(positive && new File(activePath).isFile) {
+    if(positive && (new File(activePath).isFile || activePath.isEmpty)) {
       persistString(activePath)
     }
   }

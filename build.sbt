@@ -11,7 +11,7 @@ name := """small-poll"""
 version := "1.0.0"
 
 // Scala version
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.6"
 
 // Repositories for dependencies
 resolvers ++= Seq(Resolver.mavenLocal,
@@ -24,7 +24,9 @@ resolvers ++= Seq(Resolver.mavenLocal,
   Resolver.defaultLocal)
 
 libraryDependencies ++= Seq(
-  "org.scaloid" %% "scaloid" % "4.0-RC1" withSources() withJavadoc()
+  "org.scaloid" %% "scaloid" % "4.0-RC1" withSources() withJavadoc(),
+//  "com.propensive" %% "rapture-json" % "1.1.0" withSources() withJavadoc(),
+  "org.apache.commons" % "commons-io" % "1.3.2"
 )
 
 // Override the run task with the android:run
@@ -41,6 +43,6 @@ proguardOptions in Android ++= Seq(
   "-ignorewarnings",
   "-keep class scala.Dynamic")
 
-proguardCache in Android ++= Seq(
-  ProguardCache("org.scaloid") % "org.scaloid"
-)
+//proguardCache in Android ++= Seq(
+//  ProguardCache("org.scaloid") % "org.scaloid"
+//)

@@ -8,6 +8,7 @@ import android.os.Environment
 import android.preference.DialogPreference
 import android.util.AttributeSet
 import android.view.View
+import android.view.View.OnClickListener
 import android.widget.AdapterView.OnItemClickListener
 import android.widget._
 import com.eny.smallpoll.R
@@ -38,7 +39,6 @@ class VideoPreference(ctx:Context, attrs:AttributeSet) extends DialogPreference(
       )
       .map(item => Wrap(item))
 
-
   def indexOf(file: File, adapter: ListAdapter) = (1 to adapter.getCount).find(index => adapter.getItem(index).toString.equals(file.getName))
 
   override def onBindDialogView(view:View) = {
@@ -47,8 +47,8 @@ class VideoPreference(ctx:Context, attrs:AttributeSet) extends DialogPreference(
       activePath = path
     }
     val files = view.findViewById(R.id.files).asInstanceOf[ListView]
-    files.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE)
     val activeFile = new File(activePath)
+    files.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE)
     files.setAdapter(adapter(Wrap(activeFile)))
     files.setOnItemClickListener(
       new OnItemClickListener {
@@ -59,6 +59,14 @@ class VideoPreference(ctx:Context, attrs:AttributeSet) extends DialogPreference(
           if(item.file.isDirectory) {
             files.setAdapter(adapter(item))
           }
+        }
+      }
+    )
+    val clean = view.findViewById(R.id.clean).asInstanceOf[Button]
+    clean.setOnClickListener(
+      new OnClickListener() {
+        override def onClick(v: View): Unit = {
+          activePath = ""
         }
       }
     )
@@ -83,7 +91,7 @@ class VideoPreference(ctx:Context, attrs:AttributeSet) extends DialogPreference(
 
   override def onDialogClosed(positive:Boolean) = {
     super.onDialogClosed(positive)
-    if(positive && new File(activePath).isFile) {
+    if(positive && (new File(activePath).isFile || activePath.isEmpty)) {
       persistString(activePath)
     }
   }
