@@ -55,7 +55,7 @@ class SurveyRunView extends SActivity with Db {
   var questionIds = Array[Long]()
   var surveyId = -1L
   var session = -1L
-  var isStart = true
+  var isStart = false
   var gestureLib:GestureLibrary = _
 
   onCreate {
@@ -91,8 +91,11 @@ class SurveyRunView extends SActivity with Db {
     initTextView(thanks, preferences.thanks(getString(R.string.thanks_default)), splashTextSize, splashColor, typeface)
     initTextView(welcome, preferences.welcome(getString(R.string.welcome_default)), splashTextSize, splashColor, typeface)
     initTextView(text, "", preferences.question_text_size(getString(R.string.question_text_size_default).toInt).toFloat, preferences.question_text_color(Color.WHITE), typeface)
+    welcome.setPadding(25, 25, 25, 25)
+    thanks.setPadding(25, 25, 25, 25)
     layout.onClick {
       if (questionIds.isEmpty && !isStart) {
+        isStart = true
         initArguments()
         update()
       }
@@ -104,14 +107,18 @@ class SurveyRunView extends SActivity with Db {
       next.<<.centerInParent.>>
     } += next
     val centerArea = new SRelativeLayout {
-      multiChoice.<<.centerInParent.>>
-      singleChoice.<<.centerInParent.>>
+      multiChoice.<<.centerInParent.wrap.>>
+      singleChoice.<<.centerInParent.wrap.>>
     } += multiChoice += singleChoice
     val runArea = new SLinearLayout {
-      topArea.<<.Weight(1.0f).>>
-      centerArea.<<.Weight(1.0f).>>
-      bottomArea.<<.Weight(1.0f).>>
+      topArea.<<.Weight(0.25f).>>
+      centerArea.<<.Weight(0.5f).>>
+      bottomArea.<<.Weight(0.25f).>>
     } += topArea += centerArea += bottomArea
+    topArea.layoutParams.height = 0
+    centerArea.layoutParams.height = 0
+    bottomArea.layoutParams.height = 0
+    runArea.weightSum = 1.0f
     runArea.setOrientation(runArea.VERTICAL)
     val back = initBackground
     val main = new SRelativeLayout {
@@ -150,12 +157,11 @@ class SurveyRunView extends SActivity with Db {
     restartTimer = new Timer
     if(questionIds.isEmpty) {
       markerRepository.save(Marker(session, new Date, start = isStart, surveyId))
-      if(!isStart) {
-        scheduleRestart(EndDelay, {update()})
+      if(isStart) {
+        scheduleRestart(EndDelay, {isStart=false; update()})
       }
-      isStart = !isStart
-      welcome.setVisibility(if(isStart) View.VISIBLE else View.GONE)
-      thanks.setVisibility(if(isStart) View.GONE else View.VISIBLE)
+      welcome.setVisibility(if(!isStart) View.VISIBLE else View.GONE)
+      thanks.setVisibility(if(!isStart) View.GONE else View.VISIBLE)
       multiChoice.setVisibility(View.GONE)
       singleChoice.setVisibility(View.GONE)
       next.setVisibility(View.GONE)
@@ -165,7 +171,7 @@ class SurveyRunView extends SActivity with Db {
       scheduleRestart(
         InactivityDelay, {
           questionIds = Array()
-          isStart = true
+          isStart = false
           update()
         }
       )
@@ -174,7 +180,7 @@ class SurveyRunView extends SActivity with Db {
       text.setText(question.text)
       val adapter = new CustomAdapter(
         answers.toArray,
-        R.layout.custom_multichoice_layout,
+        if(question.multi) R.layout.custom_multichoice_layout else R.layout.custom_singlechoice_layout,
         typeface,
         Some(preferences.answer_text_color(Color.WHITE)),
         Some(preferences.answer_text_size(getString(R.string.question_text_size_default).toInt).toFloat)
