@@ -25,6 +25,8 @@
     <string name="login">Войти</string>
     <string name="surveys">Список опросов</string>
     <string name="report">Сформировать отчёт</string>
+    <string name="imprt">Импорт</string>
+    <string name="export">Экспорт</string>
     <string name="edit_email">Введите адрес для отправки результатов</string>
     <string name="email_summary">Адрес для отправки статистики</string>
     <string name="thanks_summary">Сообщение пользователю по окончанию опроса</string>
@@ -96,4 +98,8 @@
     <string name="background_portrait_file_path_summary">Устанавливает картинку фона опросника в портретной ориентации</string>
     <string name="background_video_path">Устанавливает видео фон</string>
     <string name="background_video_path_summary">Устанавливает видео в качестве фона</string>
+    <string name="settings">Настройки</string>
+    <string name="clean">Очистить</string>
+    <string name="file_to_import">Выбрать файл для импорта</string>
+    <string name="folder_to_export">Выбрать путь для экспорта</string>
 </resources>

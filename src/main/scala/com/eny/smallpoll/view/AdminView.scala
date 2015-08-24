@@ -7,19 +7,25 @@ import org.scaloid.common._
 
 class AdminView extends SActivity with Db {
 
-  lazy val surveys = new SButton
-  lazy val report = new SButton
+  lazy val surveys = new SButton(getString(R.string.surveys))
+  lazy val report = new SButton(getString(R.string.report))
+  lazy val export = new SButton(getString(R.string.export))
+  lazy val imprt = new SButton(getString(R.string.imprt))
 
   onCreate {
-    surveys.setText(R.string.surveys)
-    report.setText(R.string.report)
     surveys.onClick {
       new Intent().start[SurveyListView]
     }
     report.onClick {
       new Intent().start[ReportSendView]
     }
-    setContentView(new SVerticalLayout += surveys += report)
+    export.onClick {
+      new Intent().start[ExportView]
+    }
+    imprt.onClick {
+      new Intent().start[ImportView]
+    }
+    setContentView(new SVerticalLayout += surveys += report += export += imprt)
   }
 
   override def onCreateOptionsMenu(menu:Menu):Boolean = {
