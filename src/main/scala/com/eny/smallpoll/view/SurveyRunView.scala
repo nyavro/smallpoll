@@ -176,7 +176,8 @@ class SurveyRunView extends SActivity with Db {
         }
       )
       val question = questionRepository.load(questionIds.head)
-      val answers = answerRepository.list(question.id.get)
+      val sortedAnswers = answerRepository.list(question.id.get)
+      val answers = if (preferences.shuffle_answers(false)) shuffleList(sortedAnswers) else sortedAnswers
       text.setText(question.text)
       val adapter = new CustomAdapter(
         answers.toArray,
@@ -197,6 +198,16 @@ class SurveyRunView extends SActivity with Db {
       thanks.setVisibility(View.GONE)
       welcome.setVisibility(View.GONE)
     }
+  }
+  def shuffleList[A](list:List[A]) = {
+    val random = new scala.util.Random(System.currentTimeMillis)
+    def shuffle(all:List[A]):List[A] =
+      if(all.nonEmpty) {
+        val index = random.nextInt(all.length)
+        all(index) :: shuffle(all.take(index) ++ all.drop(index+1))
+      }
+      else Nil
+    shuffle(list)
   }
   def initArguments() = {
     surveyId = getIntent.getLongExtra(SurveyID, -1L)

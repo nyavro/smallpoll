@@ -99,6 +99,12 @@
             android:title="@string/background_portrait_file_path"
             android:summary="@string/background_portrait_file_path_summary"
         />
+        <com.eny.smallpoll.view.components.EditBooleanPreference
+            android:key="shuffle_answers"
+            android:title="@string/shuffle_answers_title"
+            android:summary="@string/shuffle_answers_summary"
+            android:defaultValue="false"
+        />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/report_options">
         <EditTextPreference

@@ -98,6 +98,8 @@
     <string name="background_portrait_file_path_summary">Устанавливает картинку фона опросника в портретной ориентации</string>
     <string name="background_video_path">Устанавливает видео фон</string>
     <string name="background_video_path_summary">Устанавливает видео в качестве фона</string>
+    <string name="shuffle_answers_title">Случайный порядок ответов</string>
+    <string name="shuffle_answers_summary">Перемешивать варианты ответов при каждом показе</string>
     <string name="settings">Настройки</string>
     <string name="clean">Очистить</string>
     <string name="file_to_import">Выбрать файл для импорта</string>
