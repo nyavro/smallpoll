@@ -20,6 +20,8 @@ import org.scaloid.common._
 import org.scaloid.util.Configuration._
 
 import scala.collection.JavaConversions._
+import scala.util.Random
+
 /**
  * Created by Nyavro on 13.05.15
  */
@@ -177,7 +179,7 @@ class SurveyRunView extends SActivity with Db {
       )
       val question = questionRepository.load(questionIds.head)
       val sortedAnswers = answerRepository.list(question.id.get)
-      val answers = if (preferences.shuffle_answers(false)) shuffleList(sortedAnswers) else sortedAnswers
+      val answers = if (preferences.shuffle_answers(false)) Random.shuffle(sortedAnswers) else sortedAnswers
       text.setText(question.text)
       val adapter = new CustomAdapter(
         answers.toArray,
